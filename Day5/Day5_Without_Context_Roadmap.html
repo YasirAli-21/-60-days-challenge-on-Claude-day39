@@ -1,0 +1,268 @@
+
+<style>
+  :root { --accent-purple: #7F77DD; --accent-teal: #1D9E75; --accent-amber: #BA7517; --accent-coral: #D85A30; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .roadmap { padding: 1.5rem 0; }
+  .header-bar { display: flex; gap: 12px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .pill { font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
+  .pill-purple { background: #EEEDFE; color: #3C3489; }
+  .pill-teal { background: #E1F5EE; color: #0F6E56; }
+  .pill-amber { background: #FAEEDA; color: #854F0B; }
+  .pill-coral { background: #FAECE7; color: #993C1D; }
+  @media (prefers-color-scheme: dark) {
+    .pill-purple { background: #3C3489; color: #CECBF6; }
+    .pill-teal { background: #085041; color: #9FE1CB; }
+    .pill-amber { background: #633806; color: #FAC775; }
+    .pill-coral { background: #712B13; color: #F5C4B3; }
+  }
+  .weeks-nav { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .week-btn { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+  .week-btn.active { background: #EEEDFE; color: #3C3489; border-color: #AFA9EC; font-weight: 500; }
+  @media (prefers-color-scheme: dark) { .week-btn.active { background: #3C3489; color: #CECBF6; border-color: #534AB7; } }
+  .week-btn:hover:not(.active) { background: var(--color-background-secondary); }
+  .week-panel { display: none; }
+  .week-panel.active { display: block; }
+  .week-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .week-title { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
+  .week-theme { font-size: 13px; color: var(--color-text-secondary); }
+  .milestone-box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; margin-bottom: 1rem; border-left: 3px solid var(--accent-purple); }
+  .milestone-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-tertiary); margin-bottom: 4px; }
+  .milestone-text { font-size: 14px; color: var(--color-text-primary); font-weight: 500; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 1rem 0 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .days-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-bottom: 1rem; }
+  .day-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.6rem 0.75rem; }
+  .day-num { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; }
+  .day-task { font-size: 13px; color: var(--color-text-primary); line-height: 1.4; }
+  .resources-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; }
+  .resource-chip { display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 5px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); color: var(--color-text-primary); text-decoration: none; cursor: default; }
+  .resource-chip i { font-size: 14px; color: var(--color-text-secondary); }
+  .project-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 0.9rem 1.1rem; background: var(--color-background-primary); margin-bottom: 0.75rem; }
+  .project-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+  .project-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
+  .outcome-card { border: 2px solid #AFA9EC; border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; background: #EEEDFE; margin-top: 1rem; }
+  @media (prefers-color-scheme: dark) { .outcome-card { background: #26215C; border-color: #534AB7; } }
+  .outcome-title { font-size: 14px; font-weight: 500; color: #3C3489; margin-bottom: 8px; }
+  @media (prefers-color-scheme: dark) { .outcome-title { color: #CECBF6; } }
+  .outcome-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .outcome-tag { font-size: 12px; padding: 3px 10px; border-radius: 20px; background: var(--color-background-primary); border: 0.5px solid #AFA9EC; color: #534AB7; }
+  @media (prefers-color-scheme: dark) { .outcome-tag { color: #AFA9EC; border-color: #534AB7; } }
+  .progress-bar-wrap { margin-bottom: 1.5rem; }
+  .progress-bar-track { height: 4px; background: var(--color-border-tertiary); border-radius: 2px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 2px; background: var(--accent-purple); transition: width 0.3s; }
+  .progress-label { font-size: 12px; color: var(--color-text-tertiary); margin-top: 4px; text-align: right; }
+</style>
+
+<h2 class="sr-only">30-day machine learning roadmap for intermediate learners, covering neural networks, NLP/CV, LLMs, and deployment</h2>
+
+<div class="roadmap">
+  <div class="header-bar">
+    <span class="pill pill-purple"><i class="ti ti-brain" aria-hidden="true"></i> Machine Learning</span>
+    <span class="pill pill-teal">Intermediate level</span>
+    <span class="pill pill-amber">30 days</span>
+    <span class="pill pill-coral">4 projects</span>
+  </div>
+
+  <div class="weeks-nav">
+    <button class="week-btn active" onclick="showWeek(0)">Week 1</button>
+    <button class="week-btn" onclick="showWeek(1)">Week 2</button>
+    <button class="week-btn" onclick="showWeek(2)">Week 3</button>
+    <button class="week-btn" onclick="showWeek(3)">Week 4</button>
+    <button class="week-btn" onclick="showWeek(4)">Final outcome</button>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="prog" style="width:25%"></div></div>
+    <div class="progress-label" id="prog-label">Days 1–7 of 30</div>
+  </div>
+
+  <!-- Week 1 -->
+  <div class="week-panel active" id="w0">
+    <div class="week-header">
+      <span class="week-title">Week 1</span>
+      <span class="week-theme">Deep learning foundations with PyTorch</span>
+    </div>
+    <div class="milestone-box">
+      <div class="milestone-label">Milestone</div>
+      <div class="milestone-text">Build and train a custom neural network on a real dataset from scratch</div>
+    </div>
+    <div class="section-title">Daily tasks</div>
+    <div class="days-grid">
+      <div class="day-card"><div class="day-num">Day 1</div><div class="day-task">PyTorch tensors, autograd, and the computation graph</div></div>
+      <div class="day-card"><div class="day-num">Day 2</div><div class="day-task">Build a 3-layer MLP, forward pass, loss functions</div></div>
+      <div class="day-card"><div class="day-num">Day 3</div><div class="day-task">Backpropagation by hand + optimizer comparison (SGD vs Adam)</div></div>
+      <div class="day-card"><div class="day-num">Day 4</div><div class="day-task">DataLoader, Dataset class, batching, and augmentation</div></div>
+      <div class="day-card"><div class="day-num">Day 5</div><div class="day-task">CNNs: convolutions, pooling, receptive field</div></div>
+      <div class="day-card"><div class="day-num">Day 6</div><div class="day-task">Training loop, validation, overfitting detection</div></div>
+      <div class="day-card"><div class="day-num">Day 7</div><div class="day-task"><strong>Project day:</strong> Image classifier on CIFAR-10, push to GitHub</div></div>
+    </div>
+    <div class="section-title">Resources</div>
+    <div class="resources-row">
+      <span class="resource-chip"><i class="ti ti-book" aria-hidden="true"></i> fast.ai Part 1 (Lessons 1–3)</span>
+      <span class="resource-chip"><i class="ti ti-brand-youtube" aria-hidden="true"></i> Andrej Karpathy — Neural Nets: Zero to Hero</span>
+      <span class="resource-chip"><i class="ti ti-file-code" aria-hidden="true"></i> PyTorch official docs & tutorials</span>
+    </div>
+    <div class="section-title">Week project</div>
+    <div class="project-card">
+      <div class="project-name"><i class="ti ti-photo" aria-hidden="true" style="margin-right:6px;color:var(--accent-purple)"></i>CIFAR-10 Image Classifier</div>
+      <div class="project-desc">Train a CNN to classify 10 object categories. Track train/val loss curves, report test accuracy ≥ 75%, and save model checkpoints.</div>
+    </div>
+  </div>
+
+  <!-- Week 2 -->
+  <div class="week-panel" id="w1">
+    <div class="week-header">
+      <span class="week-title">Week 2</span>
+      <span class="week-theme">NLP fundamentals + Transformers</span>
+    </div>
+    <div class="milestone-box" style="border-left-color: var(--accent-teal)">
+      <div class="milestone-label">Milestone</div>
+      <div class="milestone-text">Fine-tune a pre-trained BERT model on a downstream NLP task</div>
+    </div>
+    <div class="section-title">Daily tasks</div>
+    <div class="days-grid">
+      <div class="day-card"><div class="day-num">Day 8</div><div class="day-task">Tokenization, embeddings, word2vec intuition</div></div>
+      <div class="day-card"><div class="day-num">Day 9</div><div class="day-task">RNN/LSTM recap + why they fall short for long sequences</div></div>
+      <div class="day-card"><div class="day-num">Day 10</div><div class="day-task">Attention mechanism — read "Attention Is All You Need"</div></div>
+      <div class="day-card"><div class="day-num">Day 11</div><div class="day-task">Transformer architecture: encoder, decoder, multi-head attention</div></div>
+      <div class="day-card"><div class="day-num">Day 12</div><div class="day-task">HuggingFace Transformers: AutoModel, AutoTokenizer, pipelines</div></div>
+      <div class="day-card"><div class="day-num">Day 13</div><div class="day-task">Fine-tuning BERT on SST-2 (sentiment), Trainer API</div></div>
+      <div class="day-card"><div class="day-num">Day 14</div><div class="day-task"><strong>Project day:</strong> Sentiment classifier + model card on HF Hub</div></div>
+    </div>
+    <div class="section-title">Resources</div>
+    <div class="resources-row">
+      <span class="resource-chip"><i class="ti ti-book" aria-hidden="true"></i> HuggingFace NLP Course (free)</span>
+      <span class="resource-chip"><i class="ti ti-file-text" aria-hidden="true"></i> "Attention Is All You Need" paper</span>
+      <span class="resource-chip"><i class="ti ti-brand-youtube" aria-hidden="true"></i> Andrej Karpathy — makemore series</span>
+    </div>
+    <div class="section-title">Week project</div>
+    <div class="project-card">
+      <div class="project-name"><i class="ti ti-message-2" aria-hidden="true" style="margin-right:6px;color:var(--accent-teal)"></i>Sentiment Analysis API</div>
+      <div class="project-desc">Fine-tune BERT on movie reviews. Wrap inference in a FastAPI endpoint. Upload model to HuggingFace Hub with a model card.</div>
+    </div>
+  </div>
+
+  <!-- Week 3 -->
+  <div class="week-panel" id="w2">
+    <div class="week-header">
+      <span class="week-title">Week 3</span>
+      <span class="week-theme">LLMs, RAG pipelines & LangChain</span>
+    </div>
+    <div class="milestone-box" style="border-left-color: var(--accent-amber)">
+      <div class="milestone-label">Milestone</div>
+      <div class="milestone-text">Build a fully functional RAG chatbot that answers questions from your own documents</div>
+    </div>
+    <div class="section-title">Daily tasks</div>
+    <div class="days-grid">
+      <div class="day-card"><div class="day-num">Day 15</div><div class="day-task">LLM landscape: GPT-4, Llama 3, Mistral — how they differ</div></div>
+      <div class="day-card"><div class="day-num">Day 16</div><div class="day-task">Prompt engineering: chain-of-thought, few-shot, system prompts</div></div>
+      <div class="day-card"><div class="day-num">Day 17</div><div class="day-task">Vector databases: embeddings, cosine similarity, Qdrant/Chroma</div></div>
+      <div class="day-card"><div class="day-num">Day 18</div><div class="day-task">RAG architecture: chunking, retrieval, context injection</div></div>
+      <div class="day-card"><div class="day-num">Day 19</div><div class="day-task">LangChain: chains, memory, document loaders, retrievers</div></div>
+      <div class="day-card"><div class="day-num">Day 20</div><div class="day-task">Evaluation: RAGAS metrics, hallucination detection</div></div>
+      <div class="day-card"><div class="day-num">Day 21</div><div class="day-task"><strong>Project day:</strong> RAG chatbot over a PDF corpus</div></div>
+    </div>
+    <div class="section-title">Resources</div>
+    <div class="resources-row">
+      <span class="resource-chip"><i class="ti ti-book" aria-hidden="true"></i> LangChain docs + cookbook</span>
+      <span class="resource-chip"><i class="ti ti-brand-youtube" aria-hidden="true"></i> DeepLearning.AI — LangChain short courses</span>
+      <span class="resource-chip"><i class="ti ti-file-code" aria-hidden="true"></i> Qdrant quickstart guide</span>
+      <span class="resource-chip"><i class="ti ti-file-text" aria-hidden="true"></i> RAGAS evaluation framework docs</span>
+    </div>
+    <div class="section-title">Week project</div>
+    <div class="project-card">
+      <div class="project-name"><i class="ti ti-robot" aria-hidden="true" style="margin-right:6px;color:var(--accent-amber)"></i>RAG document chatbot</div>
+      <div class="project-desc">Ingest 5+ PDFs into Qdrant, build a LangChain retrieval chain, add chat memory, and expose via Gradio UI. Evaluate with RAGAS.</div>
+    </div>
+  </div>
+
+  <!-- Week 4 -->
+  <div class="week-panel" id="w3">
+    <div class="week-header">
+      <span class="week-title">Week 4</span>
+      <span class="week-theme">Fine-tuning (LoRA/QLoRA) + deployment</span>
+    </div>
+    <div class="milestone-box" style="border-left-color: var(--accent-coral)">
+      <div class="milestone-label">Milestone</div>
+      <div class="milestone-text">Fine-tune an open-source LLM with QLoRA and ship it as a live API endpoint</div>
+    </div>
+    <div class="section-title">Daily tasks</div>
+    <div class="days-grid">
+      <div class="day-card"><div class="day-num">Day 22</div><div class="day-task">LoRA theory: low-rank decomposition, why it works</div></div>
+      <div class="day-card"><div class="day-num">Day 23</div><div class="day-task">QLoRA + bitsandbytes: 4-bit quantization in practice</div></div>
+      <div class="day-card"><div class="day-num">Day 24</div><div class="day-task">Fine-tune Mistral-7B on a custom instruction dataset (Colab)</div></div>
+      <div class="day-card"><div class="day-num">Day 25</div><div class="day-task">Experiment tracking with Weights & Biases, logging runs</div></div>
+      <div class="day-card"><div class="day-num">Day 26</div><div class="day-task">Containerize with Docker, build FastAPI inference server</div></div>
+      <div class="day-card"><div class="day-num">Day 27</div><div class="day-task">Deploy to Hugging Face Spaces or Render, add health checks</div></div>
+      <div class="day-card"><div class="day-num">Day 28–30</div><div class="day-task"><strong>Capstone:</strong> Portfolio project — polish, README, LinkedIn post</div></div>
+    </div>
+    <div class="section-title">Resources</div>
+    <div class="resources-row">
+      <span class="resource-chip"><i class="ti ti-file-text" aria-hidden="true"></i> QLoRA paper (Dettmers et al.)</span>
+      <span class="resource-chip"><i class="ti ti-book" aria-hidden="true"></i> Weights & Biases quickstart</span>
+      <span class="resource-chip"><i class="ti ti-brand-youtube" aria-hidden="true"></i> Maxime Labonne — LLM fine-tuning guide</span>
+      <span class="resource-chip"><i class="ti ti-file-code" aria-hidden="true"></i> HuggingFace PEFT library docs</span>
+    </div>
+    <div class="section-title">Week project</div>
+    <div class="project-card">
+      <div class="project-name"><i class="ti ti-rocket" aria-hidden="true" style="margin-right:6px;color:var(--accent-coral)"></i>Fine-tuned LLM API</div>
+      <div class="project-desc">QLoRA fine-tune Mistral-7B on an instruction dataset of your choice. Containerize inference, deploy to a public endpoint, document with W&B run logs.</div>
+    </div>
+  </div>
+
+  <!-- Outcome -->
+  <div class="week-panel" id="w4">
+    <div class="week-header">
+      <span class="week-title">Day 30 — Final outcome</span>
+      <span class="week-theme">What you'll have built and know</span>
+    </div>
+    <div class="section-title">Portfolio projects (4)</div>
+    <div class="project-card">
+      <div class="project-name"><i class="ti ti-photo" aria-hidden="true" style="margin-right:6px;color:var(--accent-purple)"></i>1 — CIFAR-10 image classifier</div>
+      <div class="project-desc">Custom CNN, training pipeline, GitHub repo with documented results</div>
+    </div>
+    <div class="project-card">
+      <div class="project-name"><i class="ti ti-message-2" aria-hidden="true" style="margin-right:6px;color:var(--accent-teal)"></i>2 — Sentiment analysis API</div>
+      <div class="project-desc">Fine-tuned BERT, FastAPI endpoint, model on HuggingFace Hub</div>
+    </div>
+    <div class="project-card">
+      <div class="project-name"><i class="ti ti-robot" aria-hidden="true" style="margin-right:6px;color:var(--accent-amber)"></i>3 — RAG document chatbot</div>
+      <div class="project-desc">LangChain + Qdrant, Gradio UI, RAGAS evaluation report</div>
+    </div>
+    <div class="project-card">
+      <div class="project-name"><i class="ti ti-rocket" aria-hidden="true" style="margin-right:6px;color:var(--accent-coral)"></i>4 — Fine-tuned LLM API (capstone)</div>
+      <div class="project-desc">QLoRA on Mistral-7B, Docker, live public endpoint, W&B experiment logs</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-title"><i class="ti ti-award" aria-hidden="true" style="margin-right:6px"></i>Skills unlocked after 30 days</div>
+      <div class="outcome-list">
+        <span class="outcome-tag">PyTorch</span>
+        <span class="outcome-tag">HuggingFace Transformers</span>
+        <span class="outcome-tag">LangChain</span>
+        <span class="outcome-tag">RAG pipelines</span>
+        <span class="outcome-tag">LoRA / QLoRA</span>
+        <span class="outcome-tag">Vector DBs</span>
+        <span class="outcome-tag">FastAPI</span>
+        <span class="outcome-tag">Docker</span>
+        <span class="outcome-tag">Weights & Biases</span>
+        <span class="outcome-tag">LLM deployment</span>
+      </div>
+    </div>
+    <div style="margin-top:1rem;">
+      <button onclick="sendPrompt('I finished the 30-day ML roadmap. What should I focus on next to become an AI Engineer?')" style="font-size:13px; padding: 8px 16px;">
+        What to learn next? ↗
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const progWidths = ['25%','50%','75%','100%','100%'];
+  const progLabels = ['Days 1–7 of 30','Days 8–14 of 30','Days 15–21 of 30','Days 22–30 of 30','Complete!'];
+  function showWeek(i) {
+    document.querySelectorAll('.week-panel').forEach((p,j)=>{p.classList.toggle('active',j===i);});
+    document.querySelectorAll('.week-btn').forEach((b,j)=>{b.classList.toggle('active',j===i);});
+    document.getElementById('prog').style.width = progWidths[i];
+    document.getElementById('prog-label').textContent = progLabels[i];
+  }
+</script>
