@@ -1,0 +1,289 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.tk{padding:1rem 0}
+.nav{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1.5rem}
+.nb{font-size:12px;padding:5px 11px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all 0.15s}
+.nb:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.nb.on{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary);font-weight:500}
+.sec{display:none}.sec.on{display:block}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.stag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--border-radius-md);background:var(--color-background-info);color:var(--color-text-info)}
+.sti{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem}
+.card p{font-size:14px;line-height:1.8;color:var(--color-text-primary);margin-bottom:0.8rem}
+.card p:last-child{margin-bottom:0}
+.lbl{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em}
+.cpbtn{font-size:12px;padding:6px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-secondary);cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:1rem}
+.cpbtn:hover{background:var(--color-background-secondary)}
+.tag{font-size:12px;padding:4px 10px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);display:inline-block;margin:3px}
+.tag.g{background:#EAF3DE;color:#3B6D11;border-color:#97C459}
+.tag.a{background:#FAEEDA;color:#854F0B;border-color:#EF9F27}
+.tag.b{background:#E6F1FB;color:#185FA5;border-color:#85B7EB}
+.tag.r{background:#FCEBEB;color:#A32D2D;border-color:#F09595}
+.row{display:flex;align-items:flex-start;gap:12px;padding:0.8rem 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.row:last-child{border-bottom:none}
+.rn{font-size:12px;font-weight:500;color:var(--color-text-secondary);min-width:22px;padding-top:1px}
+.rt{font-size:14px;color:var(--color-text-primary);line-height:1.65}
+.rt b{font-weight:500}
+.quote{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1.1rem 1.25rem;font-size:14px;line-height:1.85;color:var(--color-text-primary);font-style:italic;border-left:2px solid var(--color-border-info);margin-bottom:1rem;border-radius:0}
+.bcard{border-left:2px solid var(--color-border-info);padding-left:1rem;margin-bottom:1.1rem;border-radius:0}
+.bcard .bl{font-size:11px;font-weight:500;color:var(--color-text-info);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em}
+.bcard p{font-size:14px;line-height:1.75;color:var(--color-text-primary)}
+.rs{display:flex;gap:12px;padding:0.8rem 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.rs:last-child{border-bottom:none}
+.rph{font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--border-radius-md);height:fit-content;white-space:nowrap}
+.ph1{background:#E6F1FB;color:#185FA5}
+.ph2{background:#FAEEDA;color:#854F0B}
+.ph3{background:#EAF3DE;color:#3B6D11}
+.rc h4{font-size:13px;font-weight:500;margin-bottom:3px}
+.rc p{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.ib{margin-bottom:1.1rem}
+.ib h4{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.ib li{font-size:13px;color:var(--color-text-primary);line-height:1.75;padding:2px 0 2px 1rem;position:relative}
+.ib li::before{content:"–";position:absolute;left:0;color:var(--color-text-secondary)}
+.divr{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1rem 0}
+.sline{font-size:13px;font-weight:500;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.6rem 1rem;margin-bottom:1rem;color:var(--color-text-primary)}
+</style>
+
+<div class="tk">
+<h2 class="sr-only">Yasir Ali – Improved Job Search & Personal Branding Toolkit v2 (12 sections, verified claims only)</h2>
+<div class="nav" id="nav"></div>
+<div id="secs"></div>
+</div>
+
+<script>
+const DATA=[
+{id:"s1",tag:"Section 1",title:"ATS-friendly cover letter",body:`
+<div class="card">
+<div class="lbl">Use for: AI Engineer Intern · ML Intern · Data Analyst Intern</div>
+<p>[Date]<br>Hiring Manager<br>[Company Name], Pakistan</p>
+<p>Dear Hiring Manager,</p>
+<p>I am applying for the [AI Engineer / Machine Learning / Data Analyst] Intern position at [Company Name]. As a final-year BS Information Technology student at Quaid-e-Awam University of Engineering, Science and Technology (QUEST), I have spent the past year building AI-powered applications, training machine learning models, and developing NLP pipelines through academic projects — and I am eager to bring that hands-on foundation to your team.</p>
+<p>My Final Year Project, YSENTRY, is an AI-based resume screening and candidate evaluation platform built from the ground up. I designed the full ML pipeline: raw data preprocessing and cleaning, TF-IDF and NLP-based feature extraction, model training and evaluation using scikit-learn, and system integration. Building YSENTRY end-to-end taught me to think beyond model accuracy and focus on building systems that actually work — a mindset I believe matters on applied AI teams.</p>
+<p>Beyond YSENTRY, I developed a Weather Prediction project applying Python, Pandas, and machine learning to real forecasting data, and NutriScope, a full-stack AI nutrition analytics application featuring real-time calculations and data visualizations. These projects reflect a consistent pattern: I scope a real problem, build a working solution, and document what I learned.</p>
+<p>I complement my technical work with a strong learning discipline. I am currently participating in the ABTalks 60-Day Claude AI Mastery Challenge, through which I publicly build and document AI projects on GitHub and LinkedIn. This initiative has accelerated my understanding of modern AI tooling and production-style application development.</p>
+<p>My core skills align directly with your requirements: Python, MySQL, machine learning fundamentals, data analysis, data visualization, Git and GitHub. I am actively learning LangChain, RAG pipelines, and generative AI tooling to close the gap toward your preferred qualifications.</p>
+<p>I would welcome the opportunity to contribute to [Company Name]'s AI initiatives and learn from your engineering team. Thank you for your time and consideration.</p>
+<p>Sincerely,<br><b>Yasir Ali</b><br>BS Information Technology, QUEST — Class of 2026<br>Nawabshah, Sindh, Pakistan<br>[Email] | [LinkedIn] | [GitHub]</p>
+<button class="cpbtn" onclick="cp(this,'s1')"><i class="ti ti-copy" aria-hidden="true"></i> Copy letter</button>
+</div>`},
+
+{id:"s2",tag:"Section 2",title:"Recruiter outreach email",body:`
+<div class="card">
+<div class="sline">Subject: Final-Year AI/IT Student Seeking Intern Role – Python · ML · NLP Projects</div>
+<p>Hi [Recruiter Name],</p>
+<p>I came across [Company Name]'s internship opening and wanted to reach out directly. I am a final-year BS IT student at QUEST graduating in 2026, with hands-on experience in Python, machine learning, and NLP through academic projects.</p>
+<p>A quick snapshot of my profile:</p>
+<p>→ YSENTRY (FYP): AI resume screening system — NLP pipeline, scikit-learn, end-to-end ML<br>→ Weather Prediction: Python, Pandas, ML forecasting model<br>→ NutriScope: Full-stack AI analytics app with data visualizations<br>→ Active GitHub portfolio documenting my learning and builds<br>→ ABTalks 60-Day AI Mastery Challenge participant</p>
+<p>I am currently building toward LangChain and RAG skills alongside my studies. My GitHub and resume are available — I would appreciate any guidance on open intern roles or a referral to the right team.</p>
+<p>Thank you for your time.<br><b>Yasir Ali</b> | [Email] | [LinkedIn] | [GitHub]</p>
+<button class="cpbtn" onclick="cp(this,'s2')"><i class="ti ti-copy" aria-hidden="true"></i> Copy email</button>
+</div>`},
+
+{id:"s3",tag:"Section 3",title:"Hiring manager email",body:`
+<div class="card">
+<div class="sline">Subject: AI Engineer Intern Application – NLP · ML Pipelines · Python | Yasir Ali, QUEST 2026</div>
+<p>Dear [Hiring Manager Name],</p>
+<p>I am writing regarding the [AI Engineer / ML] Intern role at [Company Name]. I believe my applied ML project experience and NLP work in my Final Year Project make me a strong candidate, even at an early career stage.</p>
+<p>YSENTRY, my FYP, is an end-to-end AI resume screening platform where I handled every layer: data preprocessing, TF-IDF and NLP-based feature extraction, model training with scikit-learn, and system evaluation. It is the kind of project that taught me to debug pipelines, not just write them.</p>
+<p>I also built a Weather Prediction ML model and NutriScope, a full-stack AI nutrition analytics app — both documented on GitHub. What ties these together is a consistent habit: I build something real, push it publicly, and write about what I learned. I carry that same discipline into the ABTalks AI Mastery Challenge I am currently completing.</p>
+<p>I am honest about where I am: I am actively learning LangChain, RAG, and generative AI tooling. What I bring now is a solid ML foundation, clean Python, and the kind of self-directed learning posture that I believe compounds quickly in a good engineering environment.</p>
+<p>I would welcome 15 minutes to discuss how I might contribute. I am happy to share my GitHub or walk you through any project in detail.</p>
+<p>Thank you,<br><b>Yasir Ali</b> | [Email] | [LinkedIn] | [GitHub]</p>
+<button class="cpbtn" onclick="cp(this,'s3')"><i class="ti ti-copy" aria-hidden="true"></i> Copy email</button>
+</div>`},
+
+{id:"s4",tag:"Section 4",title:"LinkedIn connection request",body:`
+<div class="card">
+<div class="lbl">Primary version — under 300 characters</div>
+<div class="quote">Hi [Name], I'm a final-year IT student at QUEST with NLP and ML project experience (FYP: AI resume screening). I'm targeting AI Engineer intern roles and would value connecting with someone at [Company].</div>
+<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:1rem;">~218 characters</div>
+<div class="lbl">Alternate — after a LinkedIn post or event</div>
+<div class="quote">Hi [Name], your post on [topic] resonated with me — I'm a final-year IT student building toward AI engineering, currently completing a 60-day AI project challenge. Would love to connect.</div>
+<button class="cpbtn" onclick="cp(this,'s4')"><i class="ti ti-copy" aria-hidden="true"></i> Copy message</button>
+</div>`},
+
+{id:"s5",tag:"Section 5",title:"Referral request message",body:`
+<div class="card">
+<p>Hi [Name],</p>
+<p>I hope you're doing well. I'm reaching out because [Company Name] is one of my top targets for an AI Engineer internship, and I noticed you're part of the team there.</p>
+<p>I'm a final-year BS IT student at QUEST graduating in 2026. My strongest project is YSENTRY — an AI-based resume screening system I built as my FYP using Python, NLP, and scikit-learn. I also built a weather prediction ML model and a full-stack AI nutrition analytics app, all documented on GitHub. I'm currently completing the ABTalks 60-Day AI Mastery Challenge as part of my continuous learning.</p>
+<p>I've applied through the official channel, but a referral or even a brief note from someone inside the company makes a meaningful difference. If you're comfortable sharing my profile with the relevant team, I would genuinely appreciate it.</p>
+<p>Happy to send my resume, GitHub link, or any project details that might help. Thank you so much for considering it.</p>
+<p><b>Yasir Ali</b> | [Email] | [GitHub]</p>
+<button class="cpbtn" onclick="cp(this,'s5')"><i class="ti ti-copy" aria-hidden="true"></i> Copy message</button>
+</div>`},
+
+{id:"s6",tag:"Section 6",title:"Follow-up email (day 5)",body:`
+<div class="card">
+<div class="sline">Subject: Following Up – [AI Engineer / ML / Data Analyst] Intern Application | Yasir Ali</div>
+<p>Hi [Name],</p>
+<p>I wanted to follow up on my application for the [Role] Intern position submitted on [Date]. I remain very interested in joining [Company Name] and wanted to ensure my application was received.</p>
+<p>To recap what I bring: an end-to-end AI resume screening FYP (YSENTRY) built with Python, NLP, and scikit-learn; a weather prediction ML project; a full-stack AI analytics application; and an active GitHub portfolio. I am also currently working through a structured 60-day AI project challenge to build toward LangChain and generative AI skills.</p>
+<p>Please let me know if any additional information would be helpful. I appreciate your time and look forward to hearing from you.</p>
+<p>Best regards,<br><b>Yasir Ali</b> | [Email] | [LinkedIn] | [GitHub]</p>
+<button class="cpbtn" onclick="cp(this,'s6')"><i class="ti ti-copy" aria-hidden="true"></i> Copy email</button>
+</div>`},
+
+{id:"s7",tag:"Section 7",title:"30-second professional introduction",body:`
+<div class="card">
+<div class="lbl">Full version — interviews and career events</div>
+<div class="quote">"I'm Yasir Ali, a final-year Information Technology student at Quaid-e-Awam University in Pakistan. My focus is AI and machine learning — I built an AI-based resume screening system as my Final Year Project, applying NLP and scikit-learn to evaluate and rank candidates end-to-end. Alongside that, I've built a weather prediction ML model and a full-stack AI analytics application. I'm currently completing a 60-day structured AI project challenge to build toward LangChain and generative AI. I'm looking for an AI Engineer or ML internship where I can contribute to real products and grow under an experienced team."</div>
+<div class="lbl">Short version — cold networking</div>
+<div class="quote">"I'm Yasir Ali — final-year IT student, AI and ML practitioner. My FYP is an end-to-end NLP pipeline for resume screening. I'm actively building toward LangChain and generative AI, and I'm looking for my first AI engineering internship."</div>
+<button class="cpbtn" onclick="cp(this,'s7')"><i class="ti ti-copy" aria-hidden="true"></i> Copy intro</button>
+</div>`},
+
+{id:"s8",tag:"Section 8",title:"Top 10 job titles for your profile",body:`
+<div class="card">
+${[
+["AI Engineer Intern","Primary target — direct match to YSENTRY + Python + ML pipeline work","b","Top fit"],
+["Machine Learning Engineer Intern","Strong match — scikit-learn, Pandas, forecasting model, end-to-end pipeline","b","Top fit"],
+["NLP Engineer Intern","YSENTRY's text preprocessing and feature extraction provide direct NLP credibility","b","Top fit"],
+["Data Analyst Intern","Solid fallback — data cleaning, MySQL, visualization, Pandas","g","Strong"],
+["Data Science Intern","Broad role covering Python, ML, visualization, analytics","g","Strong"],
+["AI Application Developer Intern","NutriScope + Portfolio demonstrate full-stack AI app development capability","g","Strong"],
+["ML Research Intern","Academic FYP rigor and GitHub documentation position you well","g","Strong"],
+["Python Developer Intern","Clean Python across 3+ distinct projects is verifiable on GitHub","a","Good fit"],
+["Business Intelligence Intern","MySQL + data analysis + visualization — a viable lateral target","a","Good fit"],
+["AI Tools & Automation Intern","ABTalks challenge + Claude AI mastery = concrete modern tooling exposure","a","Good fit"]
+].map(([t,d,c,b],i)=>`
+<div class="row">
+<div class="rn">${String(i+1).padStart(2,"0")}</div>
+<div class="rt"><b>${t}</b><br><span style="font-size:13px;color:var(--color-text-secondary)">${d}</span></div>
+<span class="tag ${c}" style="margin-left:auto;white-space:nowrap;font-size:11px">${b}</span>
+</div>`).join("")}
+</div>`},
+
+{id:"s9",tag:"Section 9",title:"Key strengths recruiters will notice",body:`
+<div class="card">
+${[
+["End-to-end ML project ownership","YSENTRY is not a course exercise — you scoped, built, and documented a complete AI pipeline. For entry-level candidates, that independence signals genuine engineering capability and is genuinely rare."],
+["Applied NLP at undergraduate level","Most freshers lack hands-on NLP experience. Your FYP gives you a concrete, defensible NLP story covering text preprocessing, TF-IDF feature extraction, and model-based evaluation that few candidates at your level can match."],
+["Multi-domain project breadth","Five shipped projects across ML, NLP, full-stack AI, web development, and data analytics demonstrate versatility — important for small AI teams where generalist capability compounds quickly."],
+["Active public learning posture","GitHub portfolio + ABTalks 60-day challenge shows consistent, visible output. Senior engineers and hiring managers notice candidates who build publicly and document what they learn."],
+["Full-stack AI application thinking","NutriScope combines real-time calculations, a structured data model, and data visualizations in one deployable application — that is product thinking layered on top of ML, not just model training."],
+["Honest skill positioning","You know what you have built and what you are still learning. Candidates who can articulate their growth edge clearly are more trusted in technical interviews than those who overclaim."],
+["Self-directed learning discipline","A structured 60-day challenge, a personal GitHub trail, and a mapped learning roadmap signal someone who manages their own professional development — a green flag for remote and hybrid roles."]
+].map(([t,d],i)=>`
+<div class="row">
+<div class="rn">${String(i+1).padStart(2,"0")}</div>
+<div class="rt"><b>${t}</b><br><span style="font-size:13px;color:var(--color-text-secondary);display:block;margin-top:2px;line-height:1.6">${d}</span></div>
+</div>`).join("")}
+</div>`},
+
+{id:"s10",tag:"Section 10",title:"Skill gap analysis",body:`
+<div class="card" style="margin-bottom:1rem">
+<div class="lbl">Verified current strengths</div>
+<div>${["Python","scikit-learn","NLP fundamentals (YSENTRY)","Pandas","MySQL","Data cleaning","Data visualization","HTML/CSS/JS","Git & GitHub","ML model training & evaluation","Data preprocessing","GitHub documentation"].map(t=>`<span class="tag g">${t}</span>`).join("")}</div>
+</div>
+<div class="card" style="margin-bottom:1rem">
+<div class="lbl">Gaps to close for AI Engineer roles</div>
+<div>${["LangChain","RAG pipelines","LLM API integration","PyTorch or TensorFlow","HuggingFace Transformers","Vector databases (FAISS/Chroma)","LangGraph (agents)","REST API with FastAPI","Cloud basics (AWS/GCP free tier)","Fine-tuning with LoRA/QLoRA","Docker basics"].map(t=>`<span class="tag a">${t}</span>`).join("")}</div>
+</div>
+<div class="card">
+<div class="lbl">Practical learning roadmap — ordered by internship ROI</div>
+${[
+["ph1","Weeks 1–2","LLM API integration","Call the Claude or OpenAI API directly from Python. Build a simple document Q&A. This makes LangChain immediately intuitive when you reach it."],
+["ph1","Week 3","LangChain fundamentals","Chains, prompt templates, memory, output parsers. Convert your YSENTRY resume analysis into a LangChain pipeline — it's a natural reframe."],
+["ph2","Week 4","RAG pipeline","FAISS + document chunking + embeddings + retrieval. Add a 'chat with documents' feature to any existing project and push it to GitHub."],
+["ph2","Weeks 5–6","HuggingFace Transformers","Run pre-trained models, fine-tune a small text classifier with LoRA via PEFT. Use Google Colab — no local GPU needed."],
+["ph3","Weeks 7–8","FastAPI + deployment","Wrap a model in a REST API. Deploy one project to HuggingFace Spaces or Render's free tier. This closes the cloud fundamentals gap."],
+["ph3","Ongoing","PyTorch fundamentals","Fast.ai or Andrej Karpathy's Zero to Hero. Lower near-term priority than LLM tooling — but builds the long-term foundation."]
+].map(([ph,label,title,desc])=>`
+<div class="rs">
+<span class="rph ${ph}">${label}</span>
+<div class="rc"><h4>${title}</h4><p>${desc}</p></div>
+</div>`).join("")}
+</div>`},
+
+{id:"s11",tag:"Section 11",title:"Personal brand summary",body:`
+<div class="card">
+<div class="bcard">
+<div class="bl">Unique value proposition</div>
+<p>A Pakistani final-year IT graduate who builds AI applications end-to-end and documents everything publicly. YSENTRY proves you can take an NLP idea from raw text data to a working evaluation system. Your GitHub trail proves you can sustain output over time. Your ABTalks challenge proves you learn deliberately, not passively. That combination — builder, documenter, consistent learner — is genuinely uncommon at entry level.</p>
+</div>
+<div class="bcard">
+<div class="bl">Professional positioning statement</div>
+<p>I am an applied AI engineer in training — someone who builds projects first and writes about what I learn along the way. My work sits at the intersection of machine learning, NLP, and full-stack AI application development. I am honest about where I am in my learning curve, and I have a clear, active plan to close the gap toward LLM tooling and production AI systems.</p>
+</div>
+<div class="bcard">
+<div class="bl">Recruiter headlines — pick one</div>
+<p style="margin-bottom:0.6rem">→ <b>AI Engineer Intern Candidate | Python · NLP · ML | FYP: AI Resume Screening | ABTalks 60-Day AI Challenge</b></p>
+<p style="margin-bottom:0.6rem">→ <b>Final-Year IT Student at QUEST | Building AI Applications | NLP · scikit-learn · LangChain (learning) | Open to AI/ML Internships 2026</b></p>
+<p>→ <b>Aspiring AI Engineer | QUEST 2026 | 5 Shipped Projects: NLP · ML · Data Analytics · Web | GitHub Portfolio | Seeking First AI Role</b></p>
+</div>
+<div class="bcard">
+<div class="bl">Why headline #3 is strongest for ATS</div>
+<p>It signals "5 shipped projects" (concrete, verifiable), names three skill domains (keyword coverage), and ends with an intent phrase that triggers recruiter searches for "seeking AI role" — all within one line.</p>
+</div>
+</div>`},
+
+{id:"s12",tag:"Section 12",title:"Interview talking points",body:`
+<div class="card">
+<div class="ib">
+<h4>Achievements to lead with in every interview</h4>
+<ul>
+<li><b>YSENTRY pipeline story:</b> "I built an end-to-end AI resume screening system as my FYP — data cleaning, TF-IDF and NLP feature extraction, model training with scikit-learn, and system evaluation. The hardest part was getting the scoring consistent across different resume formats. I iterated the preprocessing layer three times before it stabilized."</li>
+<li><b>Learning initiative:</b> "I'm 60 days into a structured AI project challenge where I build a project every few days and document it publicly on GitHub and LinkedIn. It's the most effective learning method I've found — having a public output forces clarity."</li>
+<li><b>Project range:</b> "Across five projects I've worked on ML, NLP, full-stack AI applications, data visualization, and web development. I think that breadth matters for small AI teams where you often have to move across the stack."</li>
+</ul>
+</div>
+<div class="ib">
+<h4>STAR stories to prepare before interviews</h4>
+<ul>
+<li><b>Technical problem-solving:</b> Preprocessing messy resume text for YSENTRY — what the raw data looked like, what cleaning decisions you made, and why those decisions improved model performance.</li>
+<li><b>Handling ambiguity:</b> How you scoped YSENTRY from an open brief — what you decided to include, what you cut, and why.</li>
+<li><b>Learning agility:</b> A specific tool or concept you didn't know before NutriScope or the Weather Prediction project, and how quickly you got productive with it.</li>
+<li><b>Consistency under pressure:</b> How you balanced final-year coursework with active project building and the ABTalks challenge.</li>
+</ul>
+</div>
+<div class="ib">
+<h4>Questions interviewers will almost certainly ask</h4>
+<ul>
+<li>Walk me through YSENTRY — how does the ML pipeline work from input to output?</li>
+<li>What evaluation metrics did you use for your models and why?</li>
+<li>What's the difference between NLP and a large language model?</li>
+<li>How are you learning generative AI right now? What have you actually built?</li>
+<li>What would you improve about YSENTRY if you had more time?</li>
+<li>Where do you want to be in 12 months as an AI engineer?</li>
+</ul>
+</div>
+<div class="ib" style="border-bottom:none">
+<h4>How to answer the skill gap question honestly</h4>
+<ul>
+<li>"I haven't worked with LangChain or RAG pipelines in a production environment yet. I'm actively building toward that — I have a structured roadmap and I'm two weeks into it. I learn best by building, so I expect to have a working RAG project on GitHub within the month. I think being honest about that gap and having a concrete plan for it is more valuable than overclaiming."</li>
+</ul>
+</div>
+</div>`}
+];
+
+const nav=document.getElementById("nav");
+const secs=document.getElementById("secs");
+DATA.forEach((s,i)=>{
+  const b=document.createElement("button");
+  b.className="nb"+(i===0?" on":"");
+  b.textContent=s.tag;
+  b.onclick=()=>{
+    document.querySelectorAll(".nb").forEach(x=>x.classList.remove("on"));
+    document.querySelectorAll(".sec").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+    document.getElementById("sec-"+s.id).classList.add("on");
+  };
+  nav.appendChild(b);
+  const d=document.createElement("div");
+  d.className="sec"+(i===0?" on":"");
+  d.id="sec-"+s.id;
+  d.innerHTML=`<div class="sh"><span class="stag">${s.tag}</span><span class="sti">${s.title}</span></div>${s.body}`;
+  secs.appendChild(d);
+});
+
+function cp(btn,id){
+  const t=document.getElementById("sec-"+id).innerText.replace(/Copy .*/g,"").trim();
+  navigator.clipboard.writeText(t).then(()=>{
+    btn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i> Copied!';
+    setTimeout(()=>{btn.innerHTML='<i class="ti ti-copy" aria-hidden="true"></i> Copy'},2000);
+  });
+}
+</script>
