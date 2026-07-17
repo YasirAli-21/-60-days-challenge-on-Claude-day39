@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Learning Studio — Transformer Architecture</title>
+<style>
+:root{
+  --bg:#0b0d12;
+  --bg-panel:#12151d;
+  --bg-panel-2:#171b26;
+  --border:#252a38;
+  --text:#e8eaf0;
+  --text-dim:#9198ac;
+  --text-faint:#5b6178;
+  --accent:#5ee6c8;
+  --accent-2:#a78bfa;
+  --accent-warm:#ffb454;
+  --danger:#ff6b81;
+  --success:#5ee6c8;
+  --font-display:'Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --font-body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'SF Mono','Fira Code',Consolas,monospace;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:radial-gradient(ellipse at top left,#141826 0%,var(--bg) 45%);
+  color:var(--text);
+  font-family:var(--font-body);
+  line-height:1.65;
+  min-height:100vh;
+  padding-bottom:80px;
+}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important; transition-duration:.01ms !important;} }
+
+.wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+header.top{
+  position:sticky;top:0;z-index:50;
+  background:rgba(11,13,18,.85);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.top-inner{max-width:920px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:1.05rem;letter-spacing:.02em;}
+.brand .mark{width:26px;height:26px;flex:none;}
+.progress-shell{flex:1;max-width:340px;height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.progress-label{font-size:.72rem;color:var(--text-dim);font-family:var(--font-mono);white-space:nowrap;}
+
+section{padding:64px 0;border-bottom:1px solid var(--border);}
+section:last-of-type{border-bottom:none;}
+.eyebrow{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.1rem);font-weight:500;line-height:1.08;margin-bottom:18px;}
+h2{font-family:var(--font-display);font-size:clamp(1.5rem,3.4vw,2.05rem);font-weight:500;margin-bottom:14px;}
+h3{font-family:var(--font-display);font-size:1.25rem;font-weight:500;margin:22px 0 10px;color:var(--text);}
+h4{font-size:.95rem;font-weight:600;margin:16px 0 8px;color:var(--accent-2);}
+p{color:var(--text-dim);margin-bottom:14px;max-width:70ch;}
+strong{color:var(--text);font-weight:600;}
+code{font-family:var(--font-mono);background:#1c2130;padding:2px 7px;border-radius:5px;font-size:.85em;color:var(--accent-warm);}
+ul,ol{color:var(--text-dim);margin:0 0 14px 22px;}
+li{margin-bottom:6px;}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(94,230,200,.3);}
+a:hover{border-bottom-color:var(--accent);}
+
+.hero{padding-top:56px;}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;}
+@media(max-width:800px){.hero-grid{grid-template-columns:1fr;}}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
+.chip{font-family:var(--font-mono);font-size:.75rem;padding:7px 12px;border:1px solid var(--border);border-radius:99px;color:var(--text-dim);background:var(--bg-panel);}
+.chip b{color:var(--accent);}
+.hero-viz{position:relative;}
+.info-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.info-card h4{margin-top:0;}
+.reward-row{display:flex;align-items:center;gap:12px;}
+.reward-badge{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex:none;}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--accent),#3fd1b0);
+  color:#06110e;font-weight:700;font-size:.92rem;
+  padding:13px 22px;border:none;border-radius:10px;cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+  font-family:var(--font-body);
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(94,230,200,.25);}
+.btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn.secondary:hover{border-color:var(--accent);box-shadow:none;}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.module{position:relative;}
+.module.locked .module-body{filter:blur(6px);pointer-events:none;user-select:none;}
+.lock-overlay{
+  position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;
+  background:rgba(11,13,18,.55);border-radius:var(--radius);z-index:5;text-align:center;padding:20px;
+}
+.module.locked .lock-overlay{display:flex;}
+.lock-icon{font-size:2rem;}
+.module-header{display:flex;align-items:center;gap:14px;margin-bottom:22px;}
+.module-num{
+  font-family:var(--font-mono);font-size:.8rem;color:var(--bg);
+  background:var(--accent);width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;
+}
+.module-num.done{background:var(--accent-2);}
+.module-diff{margin-left:auto;font-family:var(--font-mono);font-size:.7rem;color:var(--text-faint);}
+
+.panel{background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin:18px 0;}
+.panel.warn{border-color:rgba(255,180,84,.35);background:rgba(255,180,84,.05);}
+.panel.warn h4{color:var(--accent-warm);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+.example-box{background:var(--bg-panel-2);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:16px 18px;margin:14px 0;}
+.example-box .tag{font-family:var(--font-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px;display:block;}
+.analogy-box{background:rgba(167,139,250,.07);border-left:3px solid var(--accent-2);border-radius:0 10px 10px 0;padding:16px 18px;margin:14px 0;}
+.analogy-box .tag{font-family:var(--font-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-2);margin-bottom:6px;display:block;}
+
+.diagram{background:var(--bg-panel-2);border:1px solid var(--border);border-radius:12px;padding:20px;margin:18px 0;overflow-x:auto;}
+.diagram svg{display:block;margin:0 auto;max-width:100%;height:auto;}
+.diagram .caption{text-align:center;font-size:.78rem;color:var(--text-faint);margin-top:10px;font-family:var(--font-mono);}
+
+.widget{background:var(--bg-panel-2);border:1px solid var(--border);border-radius:12px;padding:20px;margin:18px 0;}
+.widget-title{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);margin-bottom:12px;}
+.token-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.token{
+  font-family:var(--font-mono);font-size:.85rem;padding:7px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg-panel);cursor:pointer;transition:all .2s ease;color:var(--text-dim);
+}
+.token:hover{border-color:var(--accent);color:var(--text);}
+.token.active{background:var(--accent);color:#06110e;border-color:var(--accent);font-weight:700;}
+.heat-grid{display:grid;gap:3px;margin-top:14px;}
+.heat-cell{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.65rem;color:#06110e;font-weight:600;}
+.slider-row{display:flex;align-items:center;gap:14px;margin:10px 0;}
+.slider-row input[type=range]{flex:1;accent-color:var(--accent);}
+.slider-val{font-family:var(--font-mono);font-size:.8rem;color:var(--accent);min-width:46px;text-align:right;}
+
+.exercise{background:var(--bg-panel-2);border:1px dashed var(--border);border-radius:12px;padding:20px;margin:18px 0;}
+.exercise .tag{font-family:var(--font-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-warm);margin-bottom:8px;display:block;}
+.exercise textarea{
+  width:100%;min-height:80px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);padding:12px;font-family:var(--font-body);font-size:.9rem;resize:vertical;margin-top:8px;
+}
+.exercise textarea:focus{outline:none;border-color:var(--accent);}
+.reveal-btn{margin-top:10px;background:transparent;border:1px solid var(--border);color:var(--accent);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-family:var(--font-mono);}
+.reveal-btn:hover{border-color:var(--accent);}
+.reveal-content{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.reveal-content.shown{display:block;}
+
+.takeaways{background:rgba(94,230,200,.06);border:1px solid rgba(94,230,200,.25);border-radius:12px;padding:20px 22px;margin:20px 0;}
+.takeaways h4{color:var(--accent);margin-top:0;}
+.takeaways ul{margin-bottom:0;}
+.takeaways li{color:var(--text);}
+
+.quiz{background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius);padding:26px;margin-top:28px;}
+.quiz-progress{font-family:var(--font-mono);font-size:.75rem;color:var(--text-faint);margin-bottom:18px;}
+.q-block{margin-bottom:26px;padding-bottom:22px;border-bottom:1px solid var(--border);}
+.q-block:last-of-type{border-bottom:none;}
+.q-text{font-weight:600;margin-bottom:12px;color:var(--text);}
+.q-options{display:flex;flex-direction:column;gap:8px;}
+.q-option{
+  text-align:left;background:var(--bg-panel-2);border:1px solid var(--border);border-radius:9px;
+  padding:12px 14px;cursor:pointer;color:var(--text-dim);font-size:.9rem;transition:all .15s ease;
+}
+.q-option:hover{border-color:var(--accent-2);}
+.q-option.correct{border-color:var(--success);background:rgba(94,230,200,.1);color:var(--text);}
+.q-option.incorrect{border-color:var(--danger);background:rgba(255,107,129,.08);color:var(--text);}
+.q-option.disabled{pointer-events:none;}
+.q-explain{margin-top:10px;font-size:.85rem;padding:12px 14px;border-radius:8px;background:var(--bg-panel-2);color:var(--text-dim);display:none;}
+.q-explain.shown{display:block;}
+.quiz-result{text-align:center;padding:20px;display:none;}
+.quiz-result.shown{display:block;}
+.score-circle{
+  width:100px;height:100px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:1.6rem;font-weight:700;border:4px solid var(--accent);color:var(--accent);
+}
+
+.module-nav{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0;}
+.nav-pill{
+  font-family:var(--font-mono);font-size:.72rem;padding:8px 14px;border-radius:99px;border:1px solid var(--border);
+  color:var(--text-faint);
+}
+.nav-pill.active{border-color:var(--accent);color:var(--accent);}
+.nav-pill.complete{border-color:var(--accent-2);color:var(--accent-2);}
+
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:20px;}
+@media(max-width:700px){.res-grid{grid-template-columns:1fr;}}
+.res-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.res-card h4{margin-top:0;color:var(--accent);}
+.kw-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.kw{font-family:var(--font-mono);font-size:.72rem;background:var(--bg-panel-2);border:1px solid var(--border);padding:5px 10px;border-radius:6px;color:var(--text-dim);}
+
+.print-btn{position:fixed;bottom:22px;right:22px;z-index:40;}
+@media print{
+  header.top,.print-btn,.lock-overlay,.exercise textarea,.reveal-btn{display:none !important;}
+  body{background:#fff;color:#000;}
+  .module.locked .module-body{filter:none;}
+}
+::selection{background:var(--accent);color:#06110e;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#5ee6c8" stroke-width="1.5"/><circle cx="12" cy="12" r="4" fill="#5ee6c8"/><circle cx="7" cy="7" r="1.5" fill="#a78bfa"/><circle cx="17" cy="7" r="1.5" fill="#a78bfa"/><circle cx="7" cy="17" r="1.5" fill="#a78bfa"/><circle cx="17" cy="17" r="1.5" fill="#a78bfa"/></svg>
+      Interactive Learning Studio
+    </div>
+    <div class="progress-shell"><div class="progress-fill" id="topProgress"></div></div>
+    <div class="progress-label" id="topProgressLabel">0% complete</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Data Science / AI / ML → LLMs & NLP → Transformer Architecture</div>
+      <h1>The Transformer Architecture</h1>
+      <p>Understand the engine behind GPT, BERT, Claude, and nearly every modern language model — from a single token's embedding to the full stack of stacked attention blocks that lets a model read a sentence and "understand" it all at once.</p>
+      <div class="hero-meta">
+        <span class="chip">⏱ <b>~70 min</b> estimated</span>
+        <span class="chip">🎯 4 modules</span>
+        <span class="chip">🧩 16 quiz questions</span>
+        <span class="chip">🏆 mastery badge</span>
+      </div>
+      <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn" onclick="scrollToId('module-1')">Start Module 1 →</button>
+        <button class="btn secondary" onclick="scrollToId('objectives')">View objectives</button>
+      </div>
+    </div>
+    <div class="hero-viz">
+      <div class="diagram" style="margin:0;">
+        <svg viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gradA" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#5ee6c8"/><stop offset="100%" stop-color="#a78bfa"/>
+            </linearGradient>
+          </defs>
+          <g font-family="SF Mono, monospace" font-size="9" fill="#9198ac">
+            <text x="150" y="18" text-anchor="middle" fill="#e8eaf0" font-size="11">"The cat sat" — self-attention</text>
+            <g id="heroTokens">
+              <rect x="30" y="40" width="60" height="26" rx="6" fill="#171b26" stroke="#252a38"/>
+              <text x="60" y="57" text-anchor="middle" fill="#e8eaf0">The</text>
+              <rect x="120" y="40" width="60" height="26" rx="6" fill="#171b26" stroke="#252a38"/>
+              <text x="150" y="57" text-anchor="middle" fill="#e8eaf0">cat</text>
+              <rect x="210" y="40" width="60" height="26" rx="6" fill="#171b26" stroke="#252a38"/>
+              <text x="240" y="57" text-anchor="middle" fill="#e8eaf0">sat</text>
+            </g>
+            <line x1="150" y1="66" x2="60" y2="130" stroke="url(#gradA)" stroke-width="1" opacity="0.9"/>
+            <line x1="150" y1="66" x2="150" y2="130" stroke="url(#gradA)" stroke-width="3"/>
+            <line x1="150" y1="66" x2="240" y2="130" stroke="url(#gradA)" stroke-width="2" opacity="0.6"/>
+            <rect x="20" y="130" width="260" height="60" rx="10" fill="#171b26" stroke="#252a38"/>
+            <text x="150" y="155" text-anchor="middle" fill="#e8eaf0" font-size="10">Attention-weighted</text>
+            <text x="150" y="170" text-anchor="middle" fill="#9198ac" font-size="9">context representation of "cat"</text>
+            <line x1="150" y1="190" x2="150" y2="215" stroke="#5b6178" stroke-width="1" stroke-dasharray="3,3"/>
+            <rect x="80" y="215" width="140" height="30" rx="8" fill="url(#gradA)"/>
+            <text x="150" y="235" text-anchor="middle" fill="#06110e" font-size="10" font-weight="700">Feed-Forward + Output</text>
+          </g>
+        </svg>
+        <div class="caption">Every token looks at every other token, weighted by relevance</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="objectives" style="margin-top:50px;">
+    <div class="two-col">
+      <div class="info-card">
+        <h4>🎯 Learning objectives</h4>
+        <ul>
+          <li>Explain why transformers replaced RNNs/LSTMs for sequence modeling</li>
+          <li>Trace a token's journey: embedding → positional encoding → attention → output</li>
+          <li>Compute (by hand, on a tiny example) how self-attention weights are formed</li>
+          <li>Distinguish encoder-only, decoder-only, and encoder-decoder designs</li>
+          <li>Reason about multi-head attention, layer norm, and residual connections</li>
+          <li>Apply this knowledge to read and interpret real model architecture diagrams</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>📋 Prerequisites</h4>
+        <ul>
+          <li>Comfort with vectors/matrices (dot products, matrix multiplication)</li>
+          <li>Basic neural network concepts (weights, activation, backprop — high level)</li>
+          <li>Python-level familiarity is helpful but not required</li>
+        </ul>
+        <h4>✅ Expected outcomes</h4>
+        <ul>
+          <li>Ability to explain attention to a peer using your own analogy</li>
+          <li>Confidence reading transformer papers/diagrams (e.g. "Attention Is All You Need")</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-card" style="margin-top:16px;">
+      <div class="reward-row">
+        <div class="reward-badge">🏆</div>
+        <div>
+          <h4 style="margin:0 0 4px;">Reward system</h4>
+          <p style="margin:0;">Score 3/4+ on each module quiz to unlock the next module. Finish all four to unlock the <strong>Final Challenge</strong> and earn the <strong>Transformer Architect</strong> badge, tracked live in the progress bar above.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="module-nav">
+    <span class="nav-pill active" id="pill-1">01 Foundations</span>
+    <span class="nav-pill" id="pill-2">02 Self-Attention Mechanics</span>
+    <span class="nav-pill" id="pill-3">03 The Full Block: Multi-Head, Norm, FFN</span>
+    <span class="nav-pill" id="pill-4">04 Architectures & Mastery</span>
+  </div>
+</section>
+
+<section class="module" id="module-1">
+  <div class="module-body">
+    <div class="module-header">
+      <div class="module-num" id="num-1">1</div>
+      <h2 style="margin:0;">Foundations — Why Transformers, and What Goes In</h2>
+      <div class="module-diff">FOUNDATIONAL</div>
+    </div>
+
+    <p>Before 2017, sequence models (like RNNs and LSTMs) processed text <strong>one token at a time, in order</strong>. That made them slow to train and forgetful over long sentences — by the time an LSTM reached word 40, it had a fuzzy memory of word 2. The 2017 paper <em>"Attention Is All You Need"</em> proposed something radical: drop recurrence entirely, and let every token look directly at every other token, all at once.</p>
+
+    <div class="analogy-box">
+      <span class="tag">Analogy</span>
+      Imagine reading a mystery novel one word at a time through a mail slot, trying to remember every clue by memory (that's an RNN). A transformer instead spreads the entire page on a table and lets you glance between any two words instantly — "who does 'he' refer to?" is answered by looking, not remembering.
+    </div>
+
+    <h3>What actually enters the model</h3>
+    <p>A sentence like <code>"The cat sat"</code> can't be fed to a neural network as text. It goes through two conversions:</p>
+
+    <div class="two-col">
+      <div class="example-box">
+        <span class="tag">1. Tokenization + Embedding</span>
+        Each word (or sub-word piece) is mapped to an ID, then to a learned vector — typically 512 to 12,000+ numbers — that captures its meaning. Similar words end up with similar vectors: <code>king</code> and <code>queen</code> sit closer together than <code>king</code> and <code>banana</code>.
+      </div>
+      <div class="example-box">
+        <span class="tag">2. Positional Encoding</span>
+        Since attention has no built-in sense of order, a positional signal (often sine/cosine waves of different frequencies) is added to each embedding so the model knows "cat" was word 2, not word 200.
+      </div>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="SF Mono, monospace" font-size="10">
+          <text x="60" y="20" fill="#9198ac">Token</text>
+          <rect x="20" y="30" width="80" height="26" rx="6" fill="#171b26" stroke="#252a38"/><text x="60" y="47" text-anchor="middle" fill="#e8eaf0">"cat"</text>
+          <text x="60" y="80" fill="#9198ac">Embedding</text>
+          <rect x="20" y="90" width="80" height="26" rx="6" fill="#1c2130" stroke="#5ee6c8"/><text x="60" y="107" text-anchor="middle" fill="#5ee6c8">[0.2,-1.1,…]</text>
+          <path d="M110 43 H160" stroke="#5b6178" marker-end="url(#arrow)"/>
+          <text x="200" y="20" fill="#9198ac">Positional Encoding</text>
+          <rect x="160" y="90" width="90" height="26" rx="6" fill="#1c2130" stroke="#a78bfa"/><text x="205" y="107" text-anchor="middle" fill="#a78bfa">[sin,cos,…]</text>
+          <text x="205" y="47" fill="#5b6178">(position = 2)</text>
+          <path d="M100 103 H160" stroke="#5b6178"/>
+          <text x="285" y="60" fill="#e8eaf0" font-size="16">+</text>
+          <path d="M250 103 H320" stroke="#5b6178" marker-end="url(#arrow)"/>
+          <rect x="320" y="90" width="110" height="26" rx="6" fill="url(#gradA)"/><text x="375" y="107" text-anchor="middle" fill="#06110e" font-weight="700">Final input vector</text>
+          <text x="375" y="70" fill="#9198ac">fed into the transformer</text>
+          <path d="M430 103 H480" stroke="#5b6178" marker-end="url(#arrow)"/>
+          <rect x="480" y="60" width="140" height="86" rx="10" fill="#171b26" stroke="#252a38"/>
+          <text x="550" y="90" text-anchor="middle" fill="#e8eaf0" font-size="10">Transformer</text>
+          <text x="550" y="106" text-anchor="middle" fill="#e8eaf0" font-size="10">Block(s)</text>
+          <text x="550" y="125" text-anchor="middle" fill="#5b6178" font-size="9">(Module 2 →)</text>
+        </g>
+        <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b6178"/></marker></defs>
+      </svg>
+      <div class="caption">Every token → embedding vector → + positional signal → model input</div>
+    </div>
+
+    <h3>Comparison: RNN vs Transformer</h3>
+    <div class="panel">
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;">
+        <tr style="color:var(--accent);text-align:left;border-bottom:1px solid var(--border);">
+          <th style="padding:8px 6px;">Property</th><th style="padding:8px 6px;">RNN / LSTM</th><th style="padding:8px 6px;">Transformer</th>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 6px;color:var(--text);">Processing order</td><td style="padding:8px 6px;color:var(--text-dim);">Sequential, one token at a time</td><td style="padding:8px 6px;color:var(--text-dim);">Parallel, all tokens at once</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 6px;color:var(--text);">Long-range memory</td><td style="padding:8px 6px;color:var(--text-dim);">Degrades over distance</td><td style="padding:8px 6px;color:var(--text-dim);">Direct token-to-token access</td></tr>
+        <tr><td style="padding:8px 6px;color:var(--text);">Training speed on GPUs</td><td style="padding:8px 6px;color:var(--text-dim);">Slow (can't parallelize time steps)</td><td style="padding:8px 6px;color:var(--text-dim);">Fast (matrix ops parallelize well)</td></tr>
+      </table>
+    </div>
+
+    <div class="panel warn">
+      <h4>⚠ Common misconception</h4>
+      <p style="margin-bottom:0;">"Transformers understand word order because they read left to right." False — a transformer sees the whole sequence simultaneously. Order is only known because of the positional encoding added at the input; remove it and the model would treat a sentence as a bag of words.</p>
+    </div>
+
+    <div class="exercise">
+      <span class="tag">Practical exercise</span>
+      In your own words, explain to a beginner why an RNN struggles with the sentence: <em>"The trophy didn't fit in the suitcase because it was too big."</em> (Hint: what does "it" refer to, and how far back must the model look?)
+      <textarea placeholder="Type your explanation here..."></textarea>
+      <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Show model answer</button>
+      <div class="reveal-content">An RNN must carry the meaning of "trophy" and "suitcase" forward through every intermediate word before deciding what "it" refers to — that signal weakens over distance. A transformer instead lets "it" directly attend back to both "trophy" and "suitcase" in one step and weigh which fits the context of "too big," regardless of distance.</div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-title">Interactive: click a token to see what enters the model</div>
+      <div class="token-row" id="m1tokens"></div>
+      <div id="m1detail" style="font-family:var(--font-mono);font-size:.8rem;color:var(--text-dim);margin-top:10px;">Click a token above ↑</div>
+    </div>
+
+    <div class="takeaways">
+      <h4>Key takeaways</h4>
+      <ul>
+        <li>Transformers process all tokens in parallel, unlike sequential RNNs</li>
+        <li>Each token becomes a vector via embedding, then gets positional information added</li>
+        <li>Removing positional encoding would make the model blind to word order</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="lock-overlay"><div class="lock-icon">🔒</div><p style="max-width:280px;">Complete the Module 1 quiz to unlock Module 2.</p></div>
+</section>
+
+<div class="wrap"><div class="quiz" id="quiz-1">
+  <div class="quiz-progress">Module 1 Quiz · Question <span id="q1prog">0</span>/4</div>
+  <div id="q1container"></div>
+  <div class="quiz-result" id="q1result">
+    <div class="score-circle" id="q1score">0/4</div>
+    <p id="q1msg"></p>
+    <button class="btn" id="q1unlock" onclick="unlockModule(2)">Unlock Module 2 →</button>
+  </div>
+</div></div>
+
+<section class="module locked" id="module-2">
+  <div class="module-body">
+    <div class="module-header">
+      <div class="module-num" id="num-2">2</div>
+      <h2 style="margin:0;">Self-Attention Mechanics — Query, Key, Value</h2>
+      <div class="module-diff">CORE MECHANISM</div>
+    </div>
+
+    <p>Self-attention is the heart of the transformer. For every token, the model asks: <strong>"which other tokens matter to me, and how much?"</strong> It answers this using three learned projections of each token's embedding: <strong>Query (Q)</strong>, <strong>Key (K)</strong>, and <strong>Value (V)</strong>.</p>
+
+    <div class="analogy-box">
+      <span class="tag">Analogy</span>
+      Think of a library. Your <strong>Query</strong> is the question you bring ("I need info about cats"). Every book has a <strong>Key</strong> on its spine summarizing its content. You compare your query to every key to find relevance, then you actually read the <strong>Value</strong> — the book's content — from the best matches, blending information proportional to relevance.
+    </div>
+
+    <h3>The core formula</h3>
+    <div class="panel" style="text-align:center;font-family:var(--font-mono);font-size:1.05rem;color:var(--accent);">
+      Attention(Q, K, V) = softmax( Q·K<sup>T</sup> / √d<sub>k</sub> ) · V
+    </div>
+    <p>Step by step:</p>
+    <ol>
+      <li><strong>Q·K<sup>T</sup></strong> — dot-product every query against every key → raw relevance scores</li>
+      <li><strong>÷ √d<sub>k</sub></strong> — scale down so scores don't explode as vector size grows (keeps gradients stable)</li>
+      <li><strong>softmax</strong> — turn scores into a probability distribution that sums to 1 (who gets how much attention)</li>
+      <li><strong>· V</strong> — blend the Value vectors using those probabilities as weights</li>
+    </ol>
+
+    <h3>Worked example: "The cat sat"</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="SF Mono, monospace" font-size="10" fill="#9198ac">
+          <text x="20" y="18">Raw scores (Q·Kᵀ) for query = "sat"</text>
+          <rect x="20" y="30" width="120" height="26" fill="#1c2130" stroke="#252a38"/><text x="80" y="47" text-anchor="middle" fill="#e8eaf0">vs "The" = 0.8</text>
+          <rect x="150" y="30" width="120" height="26" fill="#2a2340" stroke="#252a38"/><text x="210" y="47" text-anchor="middle" fill="#e8eaf0">vs "cat" = 4.1</text>
+          <rect x="280" y="30" width="120" height="26" fill="#20302c" stroke="#252a38"/><text x="340" y="47" text-anchor="middle" fill="#e8eaf0">vs "sat" = 2.6</text>
+          <text x="20" y="85" fill="#9198ac">↓ softmax (scaled)</text>
+          <rect x="20" y="95" width="120" height="26" fill="#171b26" stroke="#5ee6c8" opacity="0.3"/><text x="80" y="112" text-anchor="middle" fill="#e8eaf0">4%</text>
+          <rect x="150" y="95" width="120" height="26" fill="#171b26" stroke="#5ee6c8" opacity="0.95"/><text x="210" y="112" text-anchor="middle" fill="#06110e" font-weight="700">78%</text>
+          <rect x="280" y="95" width="120" height="26" fill="#171b26" stroke="#5ee6c8" opacity="0.55"/><text x="340" y="112" text-anchor="middle" fill="#e8eaf0">18%</text>
+          <text x="20" y="150" fill="#e8eaf0" font-size="11">→ "sat" builds its new representation mostly from "cat" (78%), a little from itself (18%), almost none from "The" (4%)</text>
+          <text x="20" y="175" fill="#5b6178" font-size="9">This is why attention captures "who did what": sat ↔ cat linkage emerges automatically from training.</text>
+        </g>
+      </svg>
+      <div class="caption">Softmax turns raw relevance scores into attention weights that sum to 100%</div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-title">Interactive: pick a query token, see attention weights (heatmap)</div>
+      <div class="token-row" id="m2tokens"></div>
+      <div class="heat-grid" id="m2heat" style="grid-template-columns:repeat(5,1fr);"></div>
+      <div style="font-size:.75rem;color:var(--text-faint);margin-top:8px;font-family:var(--font-mono);">Darker = higher attention weight from selected token</div>
+    </div>
+
+    <div class="two-col">
+      <div class="example-box">
+        <span class="tag">Example: pronoun resolution</span>
+        In <code>"The dog chased the ball because it was fast"</code>, the query for "it" produces high attention on "dog" if "fast" describes the dog's speed — the model learns this from patterns across billions of sentences, not from grammar rules.
+      </div>
+      <div class="example-box">
+        <span class="tag">Example: same word, different meaning</span>
+        In <code>"river bank"</code> vs <code>"savings bank"</code>, self-attention lets "bank" pull different context from its neighbor, producing a different final representation each time — this is how transformers handle polysemy.
+      </div>
+    </div>
+
+    <div class="panel warn">
+      <h4>⚠ Common misconception</h4>
+      <p style="margin-bottom:0;">"Q, K, and V are three different pieces of the sentence." No — they're three different <em>linear projections</em> of the <em>same</em> input embedding, using three separate learned weight matrices (W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub>). Every token generates its own Q, K, and V.</p>
+    </div>
+
+    <div class="exercise">
+      <span class="tag">Practical exercise</span>
+      Given raw attention scores <code>[2.0, 6.0, 2.0]</code> for a token attending to 3 words, roughly which word will dominate the output after softmax, and why doesn't the exact ratio matter as much as the relative gap?
+      <textarea placeholder="Type your reasoning..."></textarea>
+      <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Show model answer</button>
+      <div class="reveal-content">The second word (score 6.0) will dominate — softmax is exponential, so a gap of 4 becomes a huge probability gap (roughly 98% vs 1% each for the others). This is why attention tends to be "peaky": once one token is clearly more relevant, softmax amplifies that difference rather than blending everything evenly.</div>
+    </div>
+
+    <div class="takeaways">
+      <h4>Key takeaways</h4>
+      <ul>
+        <li>Every token produces a Query, Key, and Value via three learned weight matrices</li>
+        <li>Attention weights come from softmax(Q·Kᵀ / √d_k), always summing to 1 per token</li>
+        <li>The output for each token is a weighted blend of all Value vectors in the sequence</li>
+      </ul>
+    </div>
+  </div>
+  <div class="lock-overlay"><div class="lock-icon">🔒</div><p style="max-width:280px;">Complete the Module 1 quiz first.</p></div>
+</section>
+
+<div class="wrap"><div class="quiz" id="quiz-2">
+  <div class="quiz-progress">Module 2 Quiz · Question <span id="q2prog">0</span>/4</div>
+  <div id="q2container"></div>
+  <div class="quiz-result" id="q2result">
+    <div class="score-circle" id="q2score">0/4</div>
+    <p id="q2msg"></p>
+    <button class="btn" id="q2unlock" onclick="unlockModule(3)">Unlock Module 3 →</button>
+  </div>
+</div></div>
+
+<section class="module locked" id="module-3">
+  <div class="module-body">
+    <div class="module-header">
+      <div class="module-num" id="num-3">3</div>
+      <h2 style="margin:0;">The Full Block — Multi-Head Attention, Residuals, FFN</h2>
+      <div class="module-diff">APPLICATION</div>
+    </div>
+
+    <p>A single attention pass captures one "type" of relationship. Real transformers run <strong>multiple attention heads in parallel</strong>, each learning to focus on different relationships — one head might track grammar, another might track coreference, another long-range topic relevance.</p>
+
+    <div class="analogy-box">
+      <span class="tag">Analogy</span>
+      Multi-head attention is like having several editors review the same paragraph simultaneously: one checks grammar, one checks factual consistency, one checks tone. Each produces separate notes (heads), then a final editor merges them into one cohesive revision (the output projection).
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="SF Mono, monospace" font-size="10" fill="#9198ac">
+          <rect x="20" y="20" width="90" height="26" rx="6" fill="#171b26" stroke="#252a38"/><text x="65" y="37" text-anchor="middle" fill="#e8eaf0">Input X</text>
+          <path d="M110 33 H150" stroke="#5b6178" marker-end="url(#arrow2)"/>
+          <rect x="150" y="10" width="90" height="26" rx="6" fill="#1c2130" stroke="#5ee6c8"/><text x="195" y="27" text-anchor="middle" fill="#5ee6c8">Head 1</text>
+          <rect x="150" y="46" width="90" height="26" rx="6" fill="#1c2130" stroke="#a78bfa"/><text x="195" y="63" text-anchor="middle" fill="#a78bfa">Head 2</text>
+          <rect x="150" y="82" width="90" height="26" rx="6" fill="#1c2130" stroke="#ffb454"/><text x="195" y="99" text-anchor="middle" fill="#ffb454">Head …N</text>
+          <path d="M240 23 H280" stroke="#5b6178"/><path d="M240 59 H280" stroke="#5b6178"/><path d="M240 95 H280" stroke="#5b6178"/>
+          <rect x="280" y="10" width="110" height="98" rx="8" fill="none" stroke="#252a38" stroke-dasharray="3,3"/>
+          <text x="335" y="120" text-anchor="middle" fill="#5b6178" font-size="9">Concatenate</text>
+          <path d="M390 59 H430" stroke="#5b6178" marker-end="url(#arrow2)"/>
+          <rect x="430" y="46" width="110" height="26" rx="6" fill="url(#gradA)"/><text x="485" y="63" text-anchor="middle" fill="#06110e" font-weight="700">Output proj.</text>
+          <path d="M65 46 V150" stroke="#5b6178" stroke-dasharray="3,3"/>
+          <path d="M485 72 V150" stroke="#5b6178"/>
+          <text x="270" y="150" fill="#e8eaf0" font-size="11">＋</text>
+          <text x="270" y="140" fill="#5b6178" font-size="9" text-anchor="middle">residual add</text>
+          <rect x="180" y="160" width="180" height="26" rx="6" fill="#171b26" stroke="#252a38"/><text x="270" y="177" text-anchor="middle" fill="#e8eaf0">Layer Norm</text>
+          <path d="M270 186 V206" stroke="#5b6178" marker-end="url(#arrow2)"/>
+          <rect x="180" y="206" width="180" height="26" rx="6" fill="#171b26" stroke="#252a38"/><text x="270" y="223" text-anchor="middle" fill="#e8eaf0">Feed-Forward (MLP)</text>
+          <path d="M270 232 V250" stroke="#5b6178"/>
+          <text x="270" y="256" text-anchor="middle" fill="#5b6178" font-size="9">→ + residual → Layer Norm → next block</text>
+        </g>
+        <defs><marker id="arrow2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b6178"/></marker></defs>
+      </svg>
+      <div class="caption">One full transformer block: multi-head attention → residual + norm → feed-forward → residual + norm</div>
+    </div>
+
+    <h3>Why residual connections and layer norm matter</h3>
+    <div class="two-col">
+      <div class="example-box">
+        <span class="tag">Residual connections</span>
+        Each sub-layer's output is <em>added back</em> to its input (<code>x + Sublayer(x)</code>) rather than replacing it. This lets gradients flow directly through many stacked layers (12, 48, 96+) without vanishing — the model can always fall back to "pass the input through unchanged" if a layer isn't helpful yet.
+      </div>
+      <div class="example-box">
+        <span class="tag">Layer normalization</span>
+        Rescales each token's vector to have stable mean/variance before the next step. Without it, values can drift to extreme magnitudes across dozens of stacked layers, destabilizing training.
+      </div>
+    </div>
+
+    <h3>The Feed-Forward Network (FFN)</h3>
+    <p>After attention mixes information <em>across</em> tokens, the FFN processes <em>each token independently</em> — typically expanding to 4× the model's dimension, applying a non-linearity (like GELU), then projecting back down. This is where much of the model's "knowledge" and pattern recognition is thought to live.</p>
+
+    <div class="widget">
+      <div class="widget-title">Interactive: how many heads should this model use?</div>
+      <div class="slider-row">
+        <span style="font-family:var(--font-mono);font-size:.8rem;">Heads:</span>
+        <input type="range" min="1" max="16" value="8" id="headSlider" oninput="updateHeads(this.value)">
+        <span class="slider-val" id="headVal">8</span>
+      </div>
+      <div id="headExplain" style="font-family:var(--font-mono);font-size:.8rem;color:var(--text-dim);margin-top:8px;">8 heads: a balanced default (used in the original "Attention Is All You Need" base model) — enough diversity of relationship-types without excessive compute.</div>
+    </div>
+
+    <div class="panel warn">
+      <h4>⚠ Common misconception</h4>
+      <p style="margin-bottom:0;">"More heads always means a smarter model." Not quite — the total attention dimension is usually fixed and split across heads, so more heads means each head is <em>narrower</em>. There's a sweet spot; too many heads can dilute each head's capacity.</p>
+    </div>
+
+    <div class="exercise">
+      <span class="tag">Practical exercise</span>
+      A colleague removes the residual connections from a 24-layer transformer to "simplify the architecture." Predict what happens during training, and why.
+      <textarea placeholder="Type your prediction..."></textarea>
+      <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Show model answer</button>
+      <div class="reveal-content">Training would likely become unstable or fail to converge. Without residual paths, gradients must pass through 24 stacked non-linear transformations during backpropagation, causing vanishing/exploding gradients. Early layers would receive almost no useful learning signal, and the model would struggle to improve beyond a shallow-network baseline.</div>
+    </div>
+
+    <div class="takeaways">
+      <h4>Key takeaways</h4>
+      <ul>
+        <li>Multi-head attention runs several attention "views" in parallel, then merges them</li>
+        <li>Residual connections let gradients flow through deep stacks of layers</li>
+        <li>Layer norm keeps activations stable across many stacked blocks</li>
+        <li>The feed-forward network processes each token independently after attention mixes context</li>
+      </ul>
+    </div>
+  </div>
+  <div class="lock-overlay"><div class="lock-icon">🔒</div><p style="max-width:280px;">Complete the Module 2 quiz first.</p></div>
+</section>
+
+<div class="wrap"><div class="quiz" id="quiz-3">
+  <div class="quiz-progress">Module 3 Quiz · Question <span id="q3prog">0</span>/4</div>
+  <div id="q3container"></div>
+  <div class="quiz-result" id="q3result">
+    <div class="score-circle" id="q3score">0/4</div>
+    <p id="q3msg"></p>
+    <button class="btn" id="q3unlock" onclick="unlockModule(4)">Unlock Module 4 →</button>
+  </div>
+</div></div>
+
+<section class="module locked" id="module-4">
+  <div class="module-body">
+    <div class="module-header">
+      <div class="module-num" id="num-4">4</div>
+      <h2 style="margin:0;">Architectures & Mastery — Encoder, Decoder, and Real Models</h2>
+      <div class="module-diff">MASTERY</div>
+    </div>
+
+    <p>The original transformer paper described an <strong>encoder-decoder</strong> design for translation. Since then, the field has largely split into three families, each keeping the same core attention block but arranging it differently.</p>
+
+    <div class="two-col">
+      <div class="example-box">
+        <span class="tag">Encoder-only (e.g. BERT)</span>
+        Every token can attend to every other token, including ones that come <em>after</em> it ("bidirectional"). Great for understanding tasks: classification, embeddings, search.
+      </div>
+      <div class="example-box">
+        <span class="tag">Decoder-only (e.g. GPT, Claude)</span>
+        Each token can only attend to itself and earlier tokens ("causal masking") — because the model must predict the next token without seeing the future. This is the dominant design for modern generative LLMs.
+      </div>
+    </div>
+    <div class="example-box">
+      <span class="tag">Encoder-decoder (e.g. T5, original Transformer)</span>
+      An encoder reads the full input (like a source sentence), and a decoder generates output token by token while attending back to the encoder's representations via "cross-attention." Common in translation and summarization.
+    </div>
+
+    <h3>Causal masking, visualized</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="SF Mono, monospace" font-size="9" fill="#9198ac">
+          <text x="10" y="15">Decoder-only mask: token can see ← past only</text>
+          <g id="maskGrid"></g>
+        </g>
+      </svg>
+      <div class="caption">Rows = query token, columns = key token. Green = visible, dark = masked out</div>
+    </div>
+
+    <div class="analogy-box">
+      <span class="tag">Analogy</span>
+      An encoder is like an editor who gets to read the whole manuscript before commenting on any single sentence. A decoder is like a live novelist dictating a story out loud — each new sentence can only reference what's already been said, never what comes next.
+    </div>
+
+    <h3>Comparison table</h3>
+    <div class="panel">
+      <table style="width:100%;border-collapse:collapse;font-size:.85rem;">
+        <tr style="color:var(--accent);text-align:left;border-bottom:1px solid var(--border);">
+          <th style="padding:8px 6px;">Type</th><th style="padding:8px 6px;">Attention direction</th><th style="padding:8px 6px;">Best for</th><th style="padding:8px 6px;">Examples</th>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 6px;color:var(--text);">Encoder-only</td><td style="padding:8px 6px;color:var(--text-dim);">Bidirectional</td><td style="padding:8px 6px;color:var(--text-dim);">Classification, embeddings</td><td style="padding:8px 6px;color:var(--text-dim);">BERT, RoBERTa</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 6px;color:var(--text);">Decoder-only</td><td style="padding:8px 6px;color:var(--text-dim);">Causal (left-to-right)</td><td style="padding:8px 6px;color:var(--text-dim);">Text generation, chat</td><td style="padding:8px 6px;color:var(--text-dim);">GPT, Claude, Llama</td></tr>
+        <tr><td style="padding:8px 6px;color:var(--text);">Encoder-decoder</td><td style="padding:8px 6px;color:var(--text-dim);">Bidirectional + cross-attn</td><td style="padding:8px 6px;color:var(--text-dim);">Translation, summarization</td><td style="padding:8px 6px;color:var(--text-dim);">T5, original Transformer</td></tr>
+      </table>
+    </div>
+
+    <div class="panel warn">
+      <h4>⚠ Common misconception</h4>
+      <p style="margin-bottom:0;">"GPT-style models can't understand context as well as BERT because they're one-directional." In practice, causal decoder-only models scaled to huge sizes (GPT-4, Claude) dramatically outperform bidirectional encoders on almost every task — architecture direction matters less than scale, data, and training objective at this point.</p>
+    </div>
+
+    <div class="widget">
+      <div class="widget-title">Interactive: pick a task, get the recommended architecture</div>
+      <div class="token-row" id="m4tasks"></div>
+      <div id="m4rec" style="font-family:var(--font-mono);font-size:.85rem;color:var(--text-dim);margin-top:10px;">Pick a task above ↑</div>
+    </div>
+
+    <div class="exercise">
+      <span class="tag">Practical exercise</span>
+      You're designing a customer-support chatbot that must generate free-form replies. Which architecture family would you choose, and what masking strategy does it require?
+      <textarea placeholder="Type your reasoning..."></textarea>
+      <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Show model answer</button>
+      <div class="reveal-content">A decoder-only architecture with causal masking is the standard choice — it naturally supports open-ended, token-by-token generation, matches how modern chat LLMs (GPT, Claude) are built, and doesn't require a separate encoder since there's no fixed source-to-target mapping like in translation.</div>
+    </div>
+
+    <div class="takeaways">
+      <h4>Key takeaways</h4>
+      <ul>
+        <li>Encoder-only = bidirectional, best for understanding tasks (BERT)</li>
+        <li>Decoder-only = causal masking, dominant for modern generative LLMs (GPT, Claude)</li>
+        <li>Encoder-decoder = full source read + cross-attention, best for translation-like tasks</li>
+        <li>At scale, decoder-only causal models have proven remarkably capable across nearly all tasks</li>
+      </ul>
+    </div>
+  </div>
+  <div class="lock-overlay"><div class="lock-icon">🔒</div><p style="max-width:280px;">Complete the Module 3 quiz first.</p></div>
+</section>
+
+<div class="wrap"><div class="quiz" id="quiz-4">
+  <div class="quiz-progress">Module 4 Quiz · Question <span id="q4prog">0</span>/4</div>
+  <div id="q4container"></div>
+  <div class="quiz-result" id="q4result">
+    <div class="score-circle" id="q4score">0/4</div>
+    <p id="q4msg"></p>
+    <button class="btn" id="q4unlock" onclick="unlockChallenge()">Unlock Final Challenge →</button>
+  </div>
+</div></div>
+
+<section class="module locked" id="final-challenge">
+  <div class="module-body">
+    <div class="eyebrow">Final Practical Challenge</div>
+    <h2>Design a Mini Transformer On Paper</h2>
+    <p>You're prototyping a small decoder-only language model for generating product descriptions from short bullet-point inputs. Sketch (in the box below) your design decisions:</p>
+    <ul>
+      <li>How many transformer blocks and attention heads would you start with, and why (consider dataset size)?</li>
+      <li>What masking strategy applies, and why?</li>
+      <li>Where do residual connections and layer norm go in each block?</li>
+      <li>What's one architectural risk if you skip positional encoding entirely?</li>
+    </ul>
+    <div class="exercise">
+      <span class="tag">Your design</span>
+      <textarea style="min-height:140px;" placeholder="Sketch your mini transformer design here..."></textarea>
+      <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Show reference design</button>
+      <div class="reveal-content">
+        A reasonable starting point: 6 decoder blocks, 8 attention heads, causal masking (since output is generated left-to-right from bullet points). Each block: input → multi-head causal self-attention → residual add → layer norm → feed-forward → residual add → layer norm. Skipping positional encoding would make the model treat bullet points as an unordered set, likely scrambling generated sentence structure and losing any sense of sequence-dependent meaning.
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:30px;">
+      <button class="btn" onclick="completeChallenge()">Mark Challenge Complete 🏆</button>
+    </div>
+  </div>
+  <div class="lock-overlay"><div class="lock-icon">🔒</div><p style="max-width:280px;">Complete all four module quizzes first.</p></div>
+</section>
+
+<section id="cheatsheet">
+  <div class="eyebrow">Reference</div>
+  <h2>Cheat Sheet</h2>
+  <div class="panel">
+    <h4 style="margin-top:0;">Core formula</h4>
+    <p style="font-family:var(--font-mono);color:var(--accent);">Attention(Q,K,V) = softmax(QKᵀ/√d_k)·V</p>
+    <h4>Pipeline (decoder-only, e.g. GPT/Claude style)</h4>
+    <p>Token → Embedding → + Positional Encoding → [Masked Multi-Head Self-Attention → Add & Norm → Feed-Forward → Add & Norm] × N layers → Output projection → Softmax over vocabulary</p>
+    <h4>Vocabulary</h4>
+    <ul>
+      <li><strong>Q/K/V</strong> — Query / Key / Value projections of a token</li>
+      <li><strong>Multi-head</strong> — several parallel attention computations, concatenated</li>
+      <li><strong>Residual connection</strong> — <code>x + Sublayer(x)</code>, preserves gradient flow</li>
+      <li><strong>Layer norm</strong> — normalizes activations for training stability</li>
+      <li><strong>Causal mask</strong> — prevents attending to future tokens (decoder-only models)</li>
+      <li><strong>Cross-attention</strong> — decoder attends to encoder outputs (encoder-decoder models)</li>
+    </ul>
+  </div>
+
+  <h2 style="margin-top:40px;">Summary Notes</h2>
+  <div class="panel">
+    <p style="margin-bottom:0;">Transformers replaced sequential RNNs with parallel self-attention, letting every token directly relate to every other token via learned Query/Key/Value projections. Multiple attention heads capture different relationship types simultaneously; residual connections and layer normalization keep deep stacks (dozens of layers) trainable; feed-forward layers process each token's representation independently. Architecture families (encoder-only, decoder-only, encoder-decoder) differ mainly in attention direction and masking, with decoder-only causal models now dominating large-scale generative AI.</p>
+  </div>
+</section>
+
+<section id="continue">
+  <div class="eyebrow">Continue Learning</div>
+  <h2>Where to Go Next</h2>
+  <div class="res-grid">
+    <div class="res-card">
+      <h4>📚 Books</h4>
+      <ul>
+        <li>"Natural Language Processing with Transformers" — Tunstall, von Werra, Wolf</li>
+        <li>"Speech and Language Processing" — Jurafsky & Martin (free draft online)</li>
+        <li>"Deep Learning" — Goodfellow, Bengio, Courville (foundational chapters on attention)</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>📄 Research papers</h4>
+      <ul>
+        <li>"Attention Is All You Need" (Vaswani et al., 2017) — the original transformer</li>
+        <li>"BERT: Pre-training of Deep Bidirectional Transformers" (Devlin et al., 2018)</li>
+        <li>"Language Models are Few-Shot Learners" (GPT-3 paper, Brown et al., 2020)</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>📖 Documentation</h4>
+      <ul>
+        <li>Hugging Face Transformers docs (huggingface.co/docs/transformers)</li>
+        <li>The Illustrated Transformer (Jay Alammar's visual guide)</li>
+        <li>PyTorch <code>nn.MultiheadAttention</code> reference docs</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>💬 Communities</h4>
+      <ul>
+        <li>Hugging Face forums & Discord</li>
+        <li>r/MachineLearning, r/LanguageTechnology</li>
+        <li>EleutherAI Discord (open LLM research discussions)</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>🛠 Practice platforms</h4>
+      <ul>
+        <li>Hugging Face Course (free, hands-on transformer implementation)</li>
+        <li>Kaggle NLP competitions & notebooks</li>
+        <li>Google Colab + minGPT / nanoGPT (Karpathy) for from-scratch builds</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>🔎 Search keywords</h4>
+      <div class="kw-row">
+        <span class="kw">self-attention mechanism</span>
+        <span class="kw">multi-head attention explained</span>
+        <span class="kw">positional encoding transformers</span>
+        <span class="kw">causal masking decoder</span>
+        <span class="kw">transformer vs RNN</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:24px;">
+    <h4 style="margin-top:0;">🤖 AI prompts for further learning</h4>
+    <ul>
+      <li>"Walk me through the matrix shapes at every step of self-attention for a batch of 2 sentences, 5 tokens each, with d_model=512 and 8 heads."</li>
+      <li>"Compare rotary positional embeddings (RoPE) to sinusoidal positional encoding — why did most modern LLMs switch?"</li>
+      <li>"Explain KV-caching in decoder-only inference and why it speeds up autoregressive generation."</li>
+      <li>"Implement a minimal single-head self-attention layer in NumPy from scratch, with comments."</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+<button class="btn secondary print-btn" onclick="window.print()">🖨 Print notes</button>
+
+<script>
+const state = { modulesComplete:[false,false,false,false], challengeComplete:false };
+
+function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
+
+function updateProgress(){
+  const total = 5;
+  const done = state.modulesComplete.filter(Boolean).length + (state.challengeComplete?1:0);
+  const pct = Math.round(done/total*100);
+  document.getElementById('topProgress').style.width = pct+'%';
+  document.getElementById('topProgressLabel').textContent = pct+'% complete';
+}
+
+function unlockModule(n){
+  document.getElementById('module-'+n).classList.remove('locked');
+  document.getElementById('num-'+(n-1)).classList.add('done');
+  document.getElementById('num-'+(n-1)).textContent='✓';
+  document.getElementById('pill-'+n).classList.add('active');
+  document.getElementById('pill-'+(n-1)).classList.remove('active');
+  document.getElementById('pill-'+(n-1)).classList.add('complete');
+  scrollToId('module-'+n);
+}
+function unlockChallenge(){
+  document.getElementById('final-challenge').classList.remove('locked');
+  document.getElementById('num-4').classList.add('done');
+  document.getElementById('num-4').textContent='✓';
+  document.getElementById('pill-4').classList.add('complete');
+  document.getElementById('pill-4').classList.remove('active');
+  scrollToId('final-challenge');
+}
+function completeChallenge(){
+  state.challengeComplete = true;
+  updateProgress();
+  alert('🏆 Challenge complete! You earned the Transformer Architect badge.');
+}
+
+const quizzes = {
+  1:[
+    {q:'Why did transformers largely replace RNNs for language modeling?',
+     opts:['They use less memory','They process all tokens in parallel and handle long-range dependencies better','They require no training data','They only work on short sentences'],
+     correct:1, exp:'RNNs process tokens sequentially and struggle with long-range dependencies; transformers process all tokens in parallel via self-attention, directly connecting any two tokens regardless of distance.'},
+    {q:'What is the purpose of positional encoding?',
+     opts:['To reduce the vocabulary size','To give the model information about token order, since attention has none built-in','To speed up training by skipping tokens','To translate words into other languages'],
+     correct:1, exp:'Self-attention has no inherent sense of sequence order — positional encoding injects that information so the model can distinguish "cat sat" from "sat cat".'},
+    {q:'What happens to a token before it enters the transformer blocks?',
+     opts:['It is converted to an embedding vector and a positional signal is added','It is translated to English first','It is deleted if it repeats','It is converted directly to a probability'],
+     correct:0, exp:'Tokens become embedding vectors (learned representations), and positional encodings are added on top before entering the transformer stack.'},
+    {q:'Which best describes an RNN\'s weakness that transformers solve?',
+     opts:['RNNs cannot use GPUs at all','RNNs forget earlier context as sequences grow longer','RNNs can only process images','RNNs always produce zero-length outputs'],
+     correct:1, exp:'RNNs carry a compressed memory forward step by step, and that signal weakens over long distances — transformers avoid this by letting every token attend directly to every other token.'}
+  ],
+  2:[
+    {q:'What are Query, Key, and Value in self-attention?',
+     opts:['Three separate sentences fed into the model','Three learned linear projections of the same token embedding','Three different languages','Three types of neural networks'],
+     correct:1, exp:'Q, K, and V are all derived from the same input embedding using three separate learned weight matrices (W_Q, W_K, W_V).'},
+    {q:'Why divide by √d_k in the attention formula?',
+     opts:['To translate the text','To keep dot-product scores from growing too large and destabilizing gradients','To make the model run on CPU only','To remove positional encoding'],
+     correct:1, exp:'As vector dimension grows, raw dot products can become very large, pushing softmax into regions with tiny gradients. Scaling by √d_k keeps values in a stable range.'},
+    {q:'What does softmax do to the raw attention scores?',
+     opts:['Deletes the lowest score','Converts scores into a probability distribution summing to 1','Multiplies all scores by zero','Reverses the token order'],
+     correct:1, exp:'Softmax exponentiates and normalizes scores so they become weights between 0 and 1 that sum to 1, representing how much attention to pay to each token.'},
+    {q:'The final attention output for a token is:',
+     opts:['A random vector','A weighted blend of all Value vectors, weighted by attention probabilities','Just the token\'s own Key vector','The average of all Query vectors'],
+     correct:1, exp:'Once attention weights (from softmax) are computed, they are used to combine the Value vectors of all tokens into the new representation for that token.'}
+  ],
+  3:[
+    {q:'What is the main benefit of running multiple attention heads?',
+     opts:['It makes the model smaller','Each head can learn to focus on a different type of relationship between tokens','It removes the need for embeddings','It eliminates the need for training data'],
+     correct:1, exp:'Different heads can specialize — e.g., one tracking syntax, another tracking coreference — and their outputs are concatenated and merged.'},
+    {q:'Why are residual connections important in deep transformer stacks?',
+     opts:['They compress the vocabulary','They let gradients flow directly through many layers, preventing vanishing gradients','They remove the need for attention','They speed up tokenization'],
+     correct:1, exp:'By adding x + Sublayer(x), the model preserves a direct path for gradients to flow backward through dozens of stacked layers during training.'},
+    {q:'What does the feed-forward network (FFN) do within a transformer block?',
+     opts:['Mixes information across all tokens like attention does','Processes each token\'s representation independently, typically after attention mixes context','Deletes tokens with low attention scores','Computes positional encodings'],
+     correct:1, exp:'Unlike attention (which mixes across tokens), the FFN applies the same transformation to each token\'s vector independently — it doesn\'t look at other tokens.'},
+    {q:'What is layer normalization primarily used for?',
+     opts:['Translating between languages','Stabilizing activations\' scale across many stacked layers during training','Increasing vocabulary size','Removing attention heads'],
+     correct:1, exp:'Layer norm rescales each token\'s vector to have consistent statistics, preventing values from drifting to extremes across dozens of stacked blocks.'}
+  ],
+  4:[
+    {q:'What distinguishes a decoder-only model like GPT or Claude?',
+     opts:['It can see future tokens when generating','It uses causal masking so each token can only attend to itself and earlier tokens','It has no attention mechanism at all','It only works on images'],
+     correct:1, exp:'Causal masking prevents a token from attending to future positions, which is essential for autoregressive, left-to-right text generation.'},
+    {q:'Which architecture is bidirectional and best suited for classification/embeddings tasks?',
+     opts:['Decoder-only (e.g. GPT)','Encoder-only (e.g. BERT)','No transformer supports this','Recurrent neural networks'],
+     correct:1, exp:'Encoder-only models like BERT let every token attend to every other token in both directions, which is ideal for understanding tasks rather than generation.'},
+    {q:'What is "cross-attention" used for in encoder-decoder models?',
+     opts:['Letting the decoder attend to the encoder\'s output representations while generating','Letting two encoders attend to each other','Deleting duplicate tokens','Encrypting the model weights'],
+     correct:0, exp:'In encoder-decoder architectures (like T5), the decoder uses cross-attention to reference the encoder\'s representation of the full input while generating output tokens.'},
+    {q:'Which statement about modern large language models is most accurate?',
+     opts:['Bidirectional models always outperform decoder-only models','Decoder-only causal models scaled up (like GPT, Claude) have proven highly capable across nearly all tasks','Architecture type matters more than model scale or training data','Transformers cannot generate text, only classify it'],
+     correct:1, exp:'At sufficient scale, decoder-only causal architectures have dominated general-purpose language modeling, generation, and even many understanding tasks.'}
+  ]
+};
+
+function buildQuiz(n){
+  const container = document.getElementById('q'+n+'container');
+  const data = quizzes[n];
+  let answered = new Array(data.length).fill(false);
+  let score = 0;
+  data.forEach((item,qi)=>{
+    const block = document.createElement('div');
+    block.className='q-block';
+    block.innerHTML = `<div class="q-text">${qi+1}. ${item.q}</div><div class="q-options"></div><div class="q-explain"></div>`;
+    const optWrap = block.querySelector('.q-options');
+    item.opts.forEach((opt,oi)=>{
+      const b = document.createElement('button');
+      b.className='q-option';
+      b.textContent = opt;
+      b.onclick = ()=>{
+        if(answered[qi]) return;
+        answered[qi]=true;
+        const allOpts = optWrap.querySelectorAll('.q-option');
+        allOpts.forEach(o=>o.classList.add('disabled'));
+        if(oi===item.correct){
+          b.classList.add('correct'); score++;
+        } else {
+          b.classList.add('incorrect');
+          allOpts[item.correct].classList.add('correct');
+        }
+        const exp = block.querySelector('.q-explain');
+        exp.textContent = item.exp;
+        exp.classList.add('shown');
+        document.getElementById('q'+n+'prog').textContent = answered.filter(Boolean).length;
+        if(answered.every(Boolean)){
+          finishQuiz(n,score,data.length);
+        }
+      };
+      optWrap.appendChild(b);
+    });
+    container.appendChild(block);
+  });
+}
+
+function finishQuiz(n,score,total){
+  const resultEl = document.getElementById('q'+n+'result');
+  const scoreCircle = document.getElementById('q'+n+'score');
+  const msg = document.getElementById('q'+n+'msg');
+  scoreCircle.textContent = score+'/'+total;
+  const pass = score >= 3;
+  scoreCircle.style.borderColor = pass ? 'var(--success)' : 'var(--danger)';
+  scoreCircle.style.color = pass ? 'var(--success)' : 'var(--danger)';
+  msg.textContent = pass
+    ? 'Great work — you\'ve got a solid grasp of this module. Ready to move on.'
+    : 'You scored below 3/4. Review the module above, then feel free to retry the concepts before continuing.';
+  document.getElementById('q'+n+'unlock').style.display = pass ? 'inline-flex' : 'none';
+  resultEl.classList.add('shown');
+  if(pass){
+    state.modulesComplete[n-1]=true;
+    updateProgress();
+  }
+}
+
+[1,2,3,4].forEach(buildQuiz);
+
+const m1data = [
+  {t:'The', emb:'[0.12, -0.44, 0.08, …]', pos:'pos=1: [sin(1),cos(1),…]'},
+  {t:'cat', emb:'[0.91, 0.15, -0.62, …]', pos:'pos=2: [sin(2),cos(2),…]'},
+  {t:'sat', emb:'[-0.33, 0.77, 0.21, …]', pos:'pos=3: [sin(3),cos(3),…]'}
+];
+const m1tokens = document.getElementById('m1tokens');
+m1data.forEach((d)=>{
+  const el = document.createElement('div');
+  el.className='token'; el.textContent=d.t;
+  el.onclick=()=>{
+    [...m1tokens.children].forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('m1detail').innerHTML =
+      `token: "${d.t}"<br>embedding: ${d.emb}<br>positional signal: ${d.pos}<br>→ input = embedding + positional signal`;
+  };
+  m1tokens.appendChild(el);
+});
+
+const m2words = ['The','cat','sat','on','it'];
+const attnMatrix = {
+  'The':[0.7,0.1,0.05,0.1,0.05],
+  'cat':[0.1,0.6,0.15,0.05,0.1],
+  'sat':[0.04,0.78,0.13,0.03,0.02],
+  'on':[0.05,0.1,0.15,0.6,0.1],
+  'it':[0.05,0.55,0.1,0.1,0.2]
+};
+const m2tokens = document.getElementById('m2tokens');
+const m2heat = document.getElementById('m2heat');
+function renderHeat(word){
+  m2heat.innerHTML='';
+  const weights = attnMatrix[word];
+  weights.forEach((w,i)=>{
+    const cell = document.createElement('div');
+    cell.className='heat-cell';
+    const alpha = 0.15 + w*0.85;
+    cell.style.background = `rgba(94,230,200,${alpha})`;
+    cell.textContent = m2words[i]+' '+Math.round(w*100)+'%';
+    m2heat.appendChild(cell);
+  });
+}
+m2words.forEach(w=>{
+  const el=document.createElement('div');
+  el.className='token'; el.textContent=w;
+  el.onclick=()=>{
+    [...m2tokens.children].forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    renderHeat(w);
+  };
+  m2tokens.appendChild(el);
+});
+m2tokens.children[2].classList.add('active');
+renderHeat('sat');
+
+function updateHeads(v){
+  document.getElementById('headVal').textContent=v;
+  const el = document.getElementById('headExplain');
+  const n = parseInt(v);
+  if(n===1) el.textContent='1 head: equivalent to plain single-head attention — no diversity of relationship types, limited representational power.';
+  else if(n<=4) el.textContent=n+' heads: lightweight, may miss some nuanced relationships, but efficient for smaller models.';
+  else if(n<=8) el.textContent=n+' heads: a balanced range — the original base Transformer used 8 heads, and many mid-size models sit in this band.';
+  else if(n<=12) el.textContent=n+' heads: common in larger pretrained models (e.g. many use 12-16), more relationship diversity at higher compute cost.';
+  else el.textContent=n+' heads: high diversity of attention patterns, but each head becomes narrower — diminishing returns and higher compute cost.';
+}
+
+const m4data = [
+  {t:'Sentiment classification', rec:'→ Encoder-only (e.g. BERT). Needs bidirectional understanding of full input, no generation required.'},
+  {t:'Chatbot / text generation', rec:'→ Decoder-only (e.g. GPT, Claude). Causal masking supports left-to-right autoregressive generation.'},
+  {t:'Machine translation', rec:'→ Encoder-decoder (e.g. T5). Encoder reads source language fully; decoder generates target language with cross-attention back to source.'},
+  {t:'Document embeddings for search', rec:'→ Encoder-only. Produces rich bidirectional representations ideal for similarity search.'}
+];
+const m4tasks = document.getElementById('m4tasks');
+m4data.forEach(d=>{
+  const el=document.createElement('div');
+  el.className='token'; el.textContent=d.t;
+  el.onclick=()=>{
+    [...m4tasks.children].forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('m4rec').textContent=d.rec;
+  };
+  m4tasks.appendChild(el);
+});
+
+const maskGrid = document.getElementById('maskGrid');
+const tokensM = ['The','cat','sat','down'];
+const cellSize = 40, offsetX=60, offsetY=25;
+tokensM.forEach((tok,ri)=>{
+  const ns='http://www.w3.org/2000/svg';
+  const lbl = document.createElementNS(ns,'text');
+  lbl.setAttribute('x',offsetX-8); lbl.setAttribute('y',offsetY+ri*cellSize+cellSize/2+4);
+  lbl.setAttribute('text-anchor','end'); lbl.setAttribute('fill','#9198ac'); lbl.setAttribute('font-size','9');
+  lbl.textContent=tok;
+  maskGrid.appendChild(lbl);
+  const clbl = document.createElementNS(ns,'text');
+  clbl.setAttribute('x',offsetX+ri*cellSize+cellSize/2); clbl.setAttribute('y',offsetY-8);
+  clbl.setAttribute('text-anchor','middle'); clbl.setAttribute('fill','#9198ac'); clbl.setAttribute('font-size','9');
+  clbl.textContent=tok;
+  maskGrid.appendChild(clbl);
+  tokensM.forEach((_,ci)=>{
+    const rect = document.createElementNS(ns,'rect');
+    rect.setAttribute('x',offsetX+ci*cellSize);
+    rect.setAttribute('y',offsetY+ri*cellSize);
+    rect.setAttribute('width',cellSize-3);
+    rect.setAttribute('height',cellSize-3);
+    rect.setAttribute('rx','3');
+    rect.setAttribute('fill', ci<=ri ? 'rgba(94,230,200,0.5)' : '#1a1e28');
+    maskGrid.appendChild(rect);
+  });
+});
+
+updateProgress();
+</script>
+</body>
+</html>
